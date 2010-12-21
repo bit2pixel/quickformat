@@ -1,0 +1,4 @@
+Fix label displaying in the volume combobox
+Correct lbl's in the UI
+Popup a warning message before formatting
+Protection against root partition formatting
