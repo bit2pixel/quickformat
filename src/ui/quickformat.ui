@@ -273,9 +273,6 @@
             <bold>false</bold>
            </font>
           </property>
-          <property name="placeholderText">
-           <string/>
-          </property>
          </widget>
         </item>
         <item row="2" column="0" colspan="2">
