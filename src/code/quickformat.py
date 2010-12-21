@@ -11,7 +11,7 @@ from subprocess import Popen, PIPE, STDOUT, call
 from time import time
 
 from quickformat.ui_quickformat import Ui_QuickFormat
-from quickformat.diskTools import DiskTools
+#from quickformat.diskTools import DiskTools
 
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
