@@ -67,20 +67,7 @@
       <property name="margin">
        <number>10</number>
       </property>
-      <item row="0" column="1">
-       <widget class="QLabel" name="name">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Brand USB Storage Device</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
+      <item row="2" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>0</number>
@@ -89,14 +76,16 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="name">
           <property name="font">
            <font>
             <pointsize>8</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="text">
-           <string>label</string>
+           <string>Brand USB Storage Device</string>
           </property>
          </widget>
         </item>
@@ -115,7 +104,7 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="format">
@@ -195,6 +184,20 @@
         </property>
         <property name="scaledContents">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>label</string>
         </property>
        </widget>
       </item>
