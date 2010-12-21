@@ -13,7 +13,7 @@
 from PyKDE4.kdecore import KAboutData, ki18n
 
 # Application Data
-appName     = "quick-format"
+appName     = "quickformat"
 modName     = "quickformat"
 programName = ki18n("Display Settings")
 version     = "0.9.95"
