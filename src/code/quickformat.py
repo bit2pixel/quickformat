@@ -11,9 +11,12 @@ from subprocess import Popen, PIPE, STDOUT, call
 from time import time
 
 from quickformat.ui_quickformat import Ui_QuickFormat
-#from quickformat.diskTools import DiskTools
+from quickformat.diskTools import DiskTools
 
 from quickformat.ui_volumeitem import Ui_VolumeItem
+
+from pds.thread import PThread
+from pds.gui import PMessageBox, OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 
 import sys, os
 
@@ -23,7 +26,8 @@ fileSystems = { "Ext4":"ext4",
                 "Ext3":"ext3",
                 "Ext2":"ext2",
                 "FAT32":"vfat",
-                "NTFS":"ntfs",}
+                "NTFS":"ntfs-3g",
+                }
 
 class VolumeItem(Ui_VolumeItem, QtGui.QWidget):
     def __init__(self, name, path, label, format, icon, parent = None):
@@ -49,12 +53,22 @@ class QuickFormat(QtGui.QWidget):
         self.generate_volume_list()
         self.generate_file_system_list()
 
+        self.volume_to_format_path = ""
+        self.volume_to_format_type = ""
+        self.volume_to_format_label = ""
+
         self.__initial_selection__()
+
+        self.pds_messagebox = PMessageBox(self)
+        self.pds_messagebox.enableOverlay()
+
+        self.pds_messagebox.busy.busy()
+        self.pds_messagebox.setStyleSheet("color:white")
 
     def __initial_selection__(self):
         self.ui.volumeName.setCurrentIndex(0)
         self.set_info()
-
+        print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
 
     def __set_custom_widgets__(self):
         self.ui.listWidget = QtGui.QListWidget(self)
@@ -69,36 +83,68 @@ class QuickFormat(QtGui.QWidget):
 
     def __init_signals__(self):
         self.connect(self.ui.volumeName, SIGNAL("activated(int)"), self.set_info)
-        """
-        QObject.connect(self.ui.btn_format, SIGNAL("clicked()"), formatter.start)
-        QObject.connect(self.ui.btn_cancel, SIGNAL("clicked()"), self.exit)
-        QObject.connect(formatter, SIGNAL("format_started()"), self.format_started)
-        QObject.connect(formatter, SIGNAL("format_successful()"), self.format_successful)
-        QObject.connect(formatter, SIGNAL("format_failed()"), self.format_failed)
-        """
+        self.connect(self.ui.btn_format, SIGNAL("clicked()"), self.format_disk)
+
+        self.connect(self.ui.btn_cancel, SIGNAL("clicked()"), self.close)
+
+    def hide_pds_messagebox(self):
+        self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
+
+    def format_disk(self):
+        self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text())
+        print "========================"
+        print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
+        print "========================"
+        self.connect(self.formatter, SIGNAL("format_started()"), self.format_started)
+        self.connect(self.formatter, SIGNAL("format_successful()"), self.format_successful)
+        self.connect(self.formatter, SIGNAL("format_failed()"), self.format_failed)
+        self.formatter.start()
+
+    def format_started(self):
+        self.pds_messagebox.setMessage("Please wait while formatting...")
+        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+
+    def format_successful(self):
+        self.ui.btn_cancel.setText("Close")
+        self.pds_messagebox.setMessage("Format completed successfully.")
+        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        # close message after 2 seconds
+        QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
+
+    def format_failed(self):
+        self.ui.btn_cancel.setText("Close")
+        self.pds_messagebox.setMessage("Device is in use. Please try again")
+        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        # close message after 2 seconds
+        QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
+
+
 
     def find_key(self, dic, val):
         """return the key of dictionary dic given the value"""
         return [k for k, v in dic.iteritems() if v == val][0]
 
-    def set_info(self):
-        """ Displays the selected volume info on main screen """
-        currentIndex = self.ui.volumeName.currentIndex()
-        item = self.ui.listWidget.item(currentIndex)
-        volumeItem = self.ui.listWidget.itemWidget(item)
+    def generate_volume_list(self):
+        selectedIndex = 0
+        currentIndex = 0
 
-        label = volumeItem.label.text()
-        icon = volumeItem.icon.pixmap()
-        fileSystem = str(volumeItem.format.text()).strip("()")
+        volumeList.clear()
 
-        # find fileSystem index from list
-        fsIndex = self.ui.fileSystem.findText(self.find_key(fileSystems, fileSystem))
+        volumes = self.get_volumes()
 
-        # select fileSystem type
-        self.ui.fileSystem.setCurrentIndex(fsIndex)
+        for volume in volumes:
+            self.add_volume_to_list(volume)
 
-        self.ui.volumeLabel.setText(label)
-        self.ui.icon.setPixmap(icon)
+            """
+            if volumePath == self.volumePathArg:
+                selectedIndex = currentIndex
+
+            # append volumeList
+            volumeList[currentIndex] = volumePath
+            currentIndex += 1
+            """
+        # select the appropriate volume from list
+        self.ui.volumeName.setCurrentIndex(selectedIndex)
 
     def generate_file_system_list(self):
         # Temporary sapce for file system list
@@ -115,6 +161,31 @@ class QuickFormat(QtGui.QWidget):
         # Display file system list in combobox
         for fs in self.sortedFileSystems:
             self.ui.fileSystem.addItem(fs)
+
+    def set_info(self):
+        """ Displays the selected volume info on main screen """
+        currentIndex = self.ui.volumeName.currentIndex()
+        item = self.ui.listWidget.item(currentIndex)
+        volumeItem = self.ui.listWidget.itemWidget(item)
+
+        label = volumeItem.label.text()
+        path = volumeItem.path.text()
+        icon = volumeItem.icon.pixmap()
+        fileSystem = str(volumeItem.format.text()).strip("()")
+
+        # find fileSystem index from list
+        fsIndex = self.ui.fileSystem.findText(self.find_key(fileSystems, fileSystem))
+
+        # select fileSystem type
+        self.ui.fileSystem.setCurrentIndex(fsIndex)
+
+        self.ui.volumeLabel.setText(label)
+        self.ui.icon.setPixmap(icon)
+
+        self.volume_to_format_path = path
+        self.volume_to_format_type = fileSystem
+        self.volume_to_format_label = label
+
 
     def filter_file_system(self, fileSystem):
         print fileSystem
@@ -178,73 +249,28 @@ class QuickFormat(QtGui.QWidget):
 
         item.setSizeHint(QSize(200,70))
 
-
-    def generate_volume_list(self):
-        selectedIndex = 0
-        currentIndex = 0
-
-        volumeList.clear()
-
-        volumes = self.get_volumes()
-
-        for volume in volumes:
-            self.add_volume_to_list(volume)
-
-            """
-            if volumePath == self.volumePathArg:
-                selectedIndex = currentIndex
-
-            # append volumeList
-            volumeList[currentIndex] = volumePath
-            currentIndex += 1
-            """
-
-
-        # select the appropriate volume from list
-        self.ui.volumeName.setCurrentIndex(selectedIndex)
-
-
-    def format_started(self):
-        self.ui.btn_format.setDisabled(True)
-        """
-        self.ui.progressBar.setMaximum(0)
-        self.ui.lbl_progress.setText(i18n("Please wait while formatting..."))
-        """
-
-    def format_successful(self):
-        """
-        self.ui.progressBar.setMaximum(1)
-        self.ui.progressBar.setValue(1)
-        self.ui.lbl_progress.setText("Format completed successfully")
-        """
-        self.ui.btn_format.setDisabled(False)
-        self.ui.btn_cancel.setText("Close")
-
-    def format_failed(self):
-        """
-        self.ui.progressBar.setMaximum(1)
-        self.ui.progressBar.setValue(0)
-        self.ui.lbl_progress.setText("Device is in use. Please try again")
-        """
-        self.ui.btn_format.setDisabled(False)
-        self.ui.btn_cancel.setText("Close")
-
-"""
 class Formatter(QThread):
-    def __init__(self):
+    def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label):
         QThread.__init__(self)
 
-    def run(self):
-        self.volumeToFormat = str(volumeList[self.ui.volumeName.currentIndex()])
+        self.volumeToFormat = str(volume_to_format_path)
+        self.fs = str(volume_to_format_type)
+        self.volumeLabel = str(volume_to_format_label)
 
-        self.fs = fileSystems[str(self.ui.fileSystem.currentText())]
+        self.diskTools = DiskTools()
+
+        print "=========================="
+        print self.volumeToFormat, self.fs, self.volumeLabel
+        print "=========================="
+
+    def run(self):
 
         self.emit(SIGNAL("format_started()"))
 
         self.formatted = self.format_disk()
 
         try:
-            diskTools.refreshPartitionTable(self.volumeToFormat[:8])
+            self.diskTools.refreshPartitionTable(self.volumeToFormat[:8])
         except:
             print "ERROR: Cannot refresh partition"
 
@@ -253,9 +279,8 @@ class Formatter(QThread):
         else:
             self.emit(SIGNAL("format_successful()"))
 
-
     def is_device_mounted(self, volumePath):
-        for mountPoint in diskTools.mountList():
+        for mountPoint in self.diskTools.mountList():
             if self.volumeToFormat == mountPoint[0]:
                 return True
 
@@ -263,17 +288,17 @@ class Formatter(QThread):
         # If device is mounted then unmount
         if self.is_device_mounted(self.volumeToFormat) == True:
             try:
-                diskTools.umount(str(self.volumeToFormat))
+                self.diskTools.umount(str(self.volumeToFormat))
             except:
                 return False
 
         # If NTFS is selected then activate quick format
-        if self.fs == "ntfs":
+        if self.fs == "ntfs-3g":
+            self.fs = "ntfs"
             self.quickOption = " -Q "
         else:
             self.quickOption = ""
 
-        self.volumeLabel = str(self.ui.txt_volumeLabel.text())
 
         # If volume label empty
         if self.volumeLabel == "":
@@ -299,7 +324,6 @@ class Formatter(QThread):
         ### TODO:
         ### if output contains these words emmit signal
         ### errorWords = ["error", "Error", "cannot", "Cannot"] ...
-"""
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
