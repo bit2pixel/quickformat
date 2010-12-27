@@ -187,11 +187,12 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_label = label
 
 
-    def filter_file_system(self, fileSystem):
+    def filter_file_system(self, fileSystem, icon):
         print fileSystem
-        if fileSystem!="" \
-                and not str(fileSystem).startswith("iso") \
-                and not str(fileSystem).startswith("swap"):
+        if fileSystem!="" and str(icon).find("removable") >= 0\
+                and (str(fileSystem).startswith("ntfs") \
+                or str(fileSystem).startswith("vfat") \
+                or str(fileSystem).startswith("ext")):
             return True
 
     def get_volumes(self):
@@ -200,7 +201,7 @@ class QuickFormat(QtGui.QWidget):
         # Get volumes
         for volume in Solid.Device.listFromType(Solid.StorageDrive.StorageVolume):
             # Apply filter
-            if self.filter_file_system(self.get_volume_file_system(volume)):
+            if self.filter_file_system(self.get_volume_file_system(volume), volume.icon()):
                 volumes.append(volume)
         return volumes
 
