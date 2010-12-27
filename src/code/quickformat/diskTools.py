@@ -96,10 +96,10 @@ class DiskTools:
     def mount(self, device, path):
         print "mount"
         self.link.Disk.Manager[self.package].mount(device, path)
-        
+
     def umount(self, device):
         print "unmount"
         self.link.Disk.Manager[self.package].umount(device)
+
     def refreshPartitionTable(self, device):
-		self.link.Disk.Manager[self.package].refreshPartitionTable(device)
-		
+        self.link.Disk.Manager[self.package].refreshPartitionTable(device)
