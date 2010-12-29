@@ -11,7 +11,8 @@ from subprocess import Popen, PIPE, STDOUT, call
 from time import time
 
 from quickformat.ui_quickformat import Ui_QuickFormat
-from quickformat.diskTools import DiskTools
+from quickformat.disktools import DiskTools
+from quickformat.formatter import Formatter
 
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
@@ -76,8 +77,6 @@ class QuickFormat(QtGui.QWidget):
         self.ui.volumeName.setView(self.ui.listWidget)
 
     def __process_args__(self):
-        self.volumePathArg = ""
-
         if len(sys.argv) == 2:
             self.volumePathArg = sys.argv[1]
 
@@ -92,9 +91,6 @@ class QuickFormat(QtGui.QWidget):
 
     def format_disk(self):
         self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text())
-        print "========================"
-        print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
-        print "========================"
         self.connect(self.formatter, SIGNAL("format_started()"), self.format_started)
         self.connect(self.formatter, SIGNAL("format_successful()"), self.format_successful)
         self.connect(self.formatter, SIGNAL("format_failed()"), self.format_failed)
@@ -250,88 +246,9 @@ class QuickFormat(QtGui.QWidget):
 
         item.setSizeHint(QSize(200,70))
 
-class Formatter(QThread):
-    def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label):
-        QThread.__init__(self)
-
-        self.volumeToFormat = str(volume_to_format_path)
-        self.fs = str(volume_to_format_type)
-        self.volumeLabel = str(volume_to_format_label)
-
-        self.diskTools = DiskTools()
-
-        print "=========================="
-        print self.volumeToFormat, self.fs, self.volumeLabel
-        print "=========================="
-
-    def run(self):
-
-        self.emit(SIGNAL("format_started()"))
-
-        self.formatted = self.format_disk()
-
-        try:
-            self.diskTools.refreshPartitionTable(self.volumeToFormat[:8])
-        except:
-            print "ERROR: Cannot refresh partition"
-
-        if self.formatted==False:
-            self.emit(SIGNAL("format_failed()"))
-        else:
-            self.emit(SIGNAL("format_successful()"))
-
-    def is_device_mounted(self, volumePath):
-        for mountPoint in self.diskTools.mountList():
-            if self.volumeToFormat == mountPoint[0]:
-                return True
-
-    def format_disk(self):
-        # If device is mounted then unmount
-        if self.is_device_mounted(self.volumeToFormat) == True:
-            try:
-                self.diskTools.umount(str(self.volumeToFormat))
-            except:
-                return False
-
-        # If NTFS is selected then activate quick format
-        if self.fs == "ntfs-3g":
-            self.fs = "ntfs"
-            self.quickOption = " -Q "
-        else:
-            self.quickOption = ""
-
-
-        # If volume label empty
-        if self.volumeLabel == "":
-            self.volumeLabel = "My Disk"
-
-        # If VFAT then labeling parameter changes
-        if self.fs == "vfat":
-            self.labelingCommand = "-n"
-        else:
-            self.labelingCommand = "-L"
-
-
-        # Command to execute
-        command = "mkfs -t " + self.fs + self.quickOption + " " + self.labelingCommand + " '" + self.volumeLabel + "' " + self.volumeToFormat
-        print command
-
-        # Execute
-        proc = Popen(command, shell = True, stdout = PIPE,)
-
-        # If theres an error then emmit error signal
-        output = proc.communicate()[0]
-
-        ### TODO:
-        ### if output contains these words emmit signal
-        ### errorWords = ["error", "Error", "cannot", "Cannot"] ...
-
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     quick_format = QuickFormat()
     quick_format.show()
 
     app.exec_()
-
-
-
