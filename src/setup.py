@@ -87,7 +87,6 @@ class Install(install):
             kde_dir = "/usr"
         bin_dir = os.path.join(kde_dir, "bin")
         locale_dir = os.path.join(kde_dir, "share/locale")
-        service_dir = os.path.join(kde_dir, "share/kde4/services")
         apps_dir = os.path.join(kde_dir, "share/applications/kde4")
         project_dir = os.path.join(kde_dir, "share/kde4/apps", about.appName)
 
@@ -95,7 +94,6 @@ class Install(install):
         print "Making directories..."
         makeDirs(bin_dir)
         makeDirs(locale_dir)
-        makeDirs(service_dir)
         makeDirs(apps_dir)
         makeDirs(project_dir)
 
