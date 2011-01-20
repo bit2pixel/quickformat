@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# QuickFormat Turkish Translations.
+# Copyright (C) 2011
+# This file is distributed under the same license as the QuickFormat package.
+# Renan Çakırerk <renan@pardus.org.tr>, 2011.
 #
 msgid ""
 msgstr ""
@@ -9,8 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-01-20 13:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: Renan Çakırerk <renan@pardus.org.tr>\n"
+"Language-Team: Turkish <pardus-translators@pardus.org.tr>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,64 +18,64 @@ msgstr ""
 
 #: .tmp/ui_quickformat.py:169 .tmp/about.py:17 .tmp/quickformat/about.py:17
 msgid "Quick Format"
-msgstr ""
+msgstr "Hızlı Biçimlendirme"
 
 #: .tmp/ui_quickformat.py:170
 msgid "Volume Name"
-msgstr ""
+msgstr "Birim Adı"
 
 #: .tmp/ui_quickformat.py:171
 msgid "File System"
-msgstr ""
+msgstr "Dosya Sistemi"
 
 #: .tmp/ui_quickformat.py:172
 msgid "Volume Label"
-msgstr ""
+msgstr "Birim Etiketi"
 
 #: .tmp/ui_quickformat.py:173
 msgid "Format"
-msgstr ""
+msgstr "Formatla"
 
 #: .tmp/ui_quickformat.py:174
 msgid "Cancel"
-msgstr ""
+msgstr "İptal"
 
 #: .tmp/about.py:19 .tmp/quickformat/about.py:19
 msgid "Removable Device Formatting Tool"
-msgstr ""
+msgstr "Çıkarılabilir Aygıt Biçimlendirme Aracı"
 
 #: .tmp/about.py:21 .tmp/quickformat/about.py:21
 msgid "(c) 2011 TUBITAK/UEKAE"
-msgstr ""
+msgstr "(c) 2011 TUBITAK/UEKAE"
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Renan Cakirerk"
-msgstr ""
+msgstr "Renan Çakırerk"
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Current Maintainer"
-msgstr ""
+msgstr "Şimdiki Geliştirici"
 
 #: .tmp/quickformat.py:99
 msgid "Please wait while formatting..."
-msgstr ""
+msgstr "Lütfen biçimlendirilirken bekleyin..."
 
 #: .tmp/quickformat.py:103 .tmp/quickformat.py:110
 msgid "Close"
-msgstr ""
+msgstr "Kapat"
 
 #: .tmp/quickformat.py:104
 msgid "Format completed successfully."
-msgstr ""
+msgstr "Biçimlendirme başarıyla tamamlandı."
 
 #: .tmp/quickformat.py:111
 msgid "Device is in use. Please try again"
-msgstr ""
+msgstr "Aygıt kullanımda. Lütfen tekrar deneyin"
 
 #: .tmp/quickformat.py:117
 msgid "QuickFormat"
-msgstr ""
+msgstr "QuickFormat"
 
 #: .tmp/quickformat.py:117
 msgid "There aren't any removable devices."
-msgstr ""
+msgstr "Çıkarılabilir aygıt bulunamadı."
