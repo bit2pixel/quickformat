@@ -40,8 +40,9 @@ class VolumeItem(Ui_VolumeItem, QtGui.QWidget):
         self.icon.setPixmap(icon)
 
 class QuickFormat(QtGui.QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, args = None):
         QtGui.QWidget.__init__(self, parent)
+        self.__sysargs = args
 
         self.ui = Ui_QuickFormat()
         self.ui.setupUi(self)
@@ -81,8 +82,9 @@ class QuickFormat(QtGui.QWidget):
 
     def __process_args__(self):
         self.volumePathArg = ""
-        if len(sys.argv) == 2:
-            self.volumePathArg = sys.argv[1]
+        if len(self.__sysargs) == 2:
+            if not self.__sysargs[1].startswith("-"):
+                self.volumePathArg = self.__sysargs[1]
 
     def __init_signals__(self):
         self.connect(self.ui.volumeName, SIGNAL("activated(int)"), self.set_info)
@@ -253,11 +255,17 @@ class QuickFormat(QtGui.QWidget):
             self.initial_selection = self.ui.listWidget.count() - 1
 
 if __name__ == "__main__":
-    # app = QtGui.QApplication(sys.argv)
+
+    args = []
+    if len(sys.argv) >= 2:
+        if not sys.argv[1].startswith("-"):
+            args = sys.argv
+            sys.argv = [sys.argv[0]]
+
     KCmdLineArgs.init(sys.argv, aboutData)
     app =  kdeui.KApplication()
 
-    quick_format = QuickFormat()
+    quick_format = QuickFormat(args = args)
     quick_format.show()
 
     app.exec_()
