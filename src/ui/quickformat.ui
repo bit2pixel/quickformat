@@ -31,6 +31,10 @@
   <property name="windowTitle">
    <string>Quick Format</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../data/images.qrc">
+    <normaloff>:/images/images/draw-eraser.png</normaloff>:/images/images/draw-eraser.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
