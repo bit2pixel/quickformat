@@ -4,12 +4,15 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSize, SIGNAL, QThread
 
+from PyKDE4 import kdeui
 from PyKDE4.kdecore import i18n
 from PyKDE4.solid import Solid
+from PyKDE4.kdecore import KCmdLineArgs
 
 from quickformat.ui_quickformat import Ui_QuickFormat
 from quickformat.formatter import Formatter
 
+from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
 from pds.thread import PThread
@@ -250,7 +253,10 @@ class QuickFormat(QtGui.QWidget):
             self.initial_selection = self.ui.listWidget.count() - 1
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    # app = QtGui.QApplication(sys.argv)
+    KCmdLineArgs.init(sys.argv, aboutData)
+    app =  kdeui.KApplication()
+
     quick_format = QuickFormat()
     quick_format.show()
 
