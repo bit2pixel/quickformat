@@ -36,9 +36,9 @@ def update_messages():
     # Generate POT file
     os.system("find .tmp -name '*.py' | xargs xgettext --kde \
                 -ci18n -ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3 -ktr2i18n:1 \
-                        -kI18N_NOOP:1 -kI18N_NOOP2:1c,2 -kaliasLocale -kki18n:1 -kki18nc:1c,2 \
-                        -kki18np:1,2 -kki18ncp:1c,2,3 \
-            --default-domain=%s --keyword=_ --keyword=i18n --keyword=ki18n -o po/%s.pot" % (about.catalog, about.catalog))
+                -kI18N_NOOP:1 -kI18N_NOOP2:1c,2 -kaliasLocale -kki18n:1 -kki18nc:1c,2 \
+                -kki18np:1,2 -kki18ncp:1c,2,3 \
+                --default-domain=%s --keyword=_ --keyword=i18n --keyword=ki18n -o po/%s.pot" % (about.catalog, about.catalog))
 
 
     # Update PO files
@@ -65,7 +65,7 @@ class Build(build):
         # Copy compiled UIs and RCs
         print "Generating UIs..."
         for filename in glob.glob1("ui", "*.ui"):
-            os.system("pykdeuic4 -o build/%s/ui_%s.py ui/%s" % (about.modName, filename.split(".")[0], filename))
+            os.system("pykdeuic4 -o build/%s/ui_%s.py ui/%s" % (about.appName, filename.split(".")[0], filename))
         #print "Generating RCs..."
         for filename in glob.glob1("data", "*.qrc"):
             os.system("/usr/bin/pyrcc4 data/%s -o build/%s_rc.py" % (filename, filename.split(".")[0]))

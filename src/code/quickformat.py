@@ -43,9 +43,10 @@ class QuickFormat(QtGui.QWidget):
         self.ui = Ui_QuickFormat()
         self.ui.setupUi(self)
 
+        self.__process_args__()
+
         self.__init_signals__()
         self.__set_custom_widgets__()
-        self.__process_args__()
 
         self.__init_messagebox__()
 
@@ -56,10 +57,10 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_type = ""
         self.volume_to_format_label = ""
 
-        self.__initial_selection__()
+        self.__initial_selection__(self.initial_selection)
 
-    def __initial_selection__(self):
-        self.ui.volumeName.setCurrentIndex(0)
+    def __initial_selection__(self, index):
+        self.ui.volumeName.setCurrentIndex(index)
         self.set_info()
         print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
 
@@ -76,6 +77,7 @@ class QuickFormat(QtGui.QWidget):
         self.ui.volumeName.setView(self.ui.listWidget)
 
     def __process_args__(self):
+        self.volumePathArg = ""
         if len(sys.argv) == 2:
             self.volumePathArg = sys.argv[1]
 
@@ -136,14 +138,6 @@ class QuickFormat(QtGui.QWidget):
         for volume in volumes:
             self.add_volume_to_list(volume)
 
-            """
-            if volumePath == self.volumePathArg:
-                selectedIndex = currentIndex
-
-            # append volumeList
-            volumeList[currentIndex] = volumePath
-            currentIndex += 1
-            """
         # select the appropriate volume from list
         self.ui.volumeName.setCurrentIndex(selectedIndex)
 
@@ -249,6 +243,11 @@ class QuickFormat(QtGui.QWidget):
         self.ui.listWidget.setItemWidget(item, widget)
 
         item.setSizeHint(QSize(200,70))
+
+        self.initial_selection = 0
+
+        if volumeInfo["volume_path"] == self.volumePathArg:
+            self.initial_selection = self.ui.listWidget.count() - 1
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
