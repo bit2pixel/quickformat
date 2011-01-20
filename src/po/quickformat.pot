@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-20 13:17+0200\n"
+"POT-Creation-Date: 2011-01-20 14:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,26 +57,26 @@ msgstr ""
 msgid "Current Maintainer"
 msgstr ""
 
-#: .tmp/quickformat.py:99
+#: .tmp/quickformat.py:101
 msgid "Please wait while formatting..."
 msgstr ""
 
-#: .tmp/quickformat.py:103 .tmp/quickformat.py:110
+#: .tmp/quickformat.py:105 .tmp/quickformat.py:112
 msgid "Close"
 msgstr ""
 
-#: .tmp/quickformat.py:104
+#: .tmp/quickformat.py:106
 msgid "Format completed successfully."
 msgstr ""
 
-#: .tmp/quickformat.py:111
+#: .tmp/quickformat.py:113
 msgid "Device is in use. Please try again"
 msgstr ""
 
-#: .tmp/quickformat.py:117
+#: .tmp/quickformat.py:119
 msgid "QuickFormat"
 msgstr ""
 
-#: .tmp/quickformat.py:117
+#: .tmp/quickformat.py:119
 msgid "There aren't any removable devices."
 msgstr ""
