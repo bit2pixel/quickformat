@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import QSize, SIGNAL, QThread
+from quickformat.disktools import DiskTools
+from subprocess import Popen, PIPE, STDOUT, call
 
 class Formatter(QThread):
     def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label):

@@ -7,11 +7,7 @@ from PyQt4.QtCore import QSize, SIGNAL, QThread
 from PyKDE4.kdecore import i18n
 from PyKDE4.solid import Solid
 
-from subprocess import Popen, PIPE, STDOUT, call
-from time import time
-
 from quickformat.ui_quickformat import Ui_QuickFormat
-from quickformat.disktools import DiskTools
 from quickformat.formatter import Formatter
 
 from quickformat.ui_volumeitem import Ui_VolumeItem
@@ -51,6 +47,8 @@ class QuickFormat(QtGui.QWidget):
         self.__set_custom_widgets__()
         self.__process_args__()
 
+        self.__init_messagebox__()
+
         self.generate_volume_list()
         self.generate_file_system_list()
 
@@ -60,16 +58,17 @@ class QuickFormat(QtGui.QWidget):
 
         self.__initial_selection__()
 
+    def __initial_selection__(self):
+        self.ui.volumeName.setCurrentIndex(0)
+        self.set_info()
+        print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
+
+    def __init_messagebox__(self):
         self.pds_messagebox = PMessageBox(self)
         self.pds_messagebox.enableOverlay()
 
         self.pds_messagebox.busy.busy()
         self.pds_messagebox.setStyleSheet("color:white")
-
-    def __initial_selection__(self):
-        self.ui.volumeName.setCurrentIndex(0)
-        self.set_info()
-        print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
 
     def __set_custom_widgets__(self):
         self.ui.listWidget = QtGui.QListWidget(self)
@@ -97,24 +96,27 @@ class QuickFormat(QtGui.QWidget):
         self.formatter.start()
 
     def format_started(self):
-        self.pds_messagebox.setMessage("Please wait while formatting...")
+        self.pds_messagebox.setMessage(i18n("Please wait while formatting..."))
         self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
 
     def format_successful(self):
-        self.ui.btn_cancel.setText("Close")
-        self.pds_messagebox.setMessage("Format completed successfully.")
+        self.ui.btn_cancel.setText(i18n("Close"))
+        self.pds_messagebox.setMessage(i18n("Format completed successfully."))
         self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
         # close message after 2 seconds
         QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
 
     def format_failed(self):
-        self.ui.btn_cancel.setText("Close")
-        self.pds_messagebox.setMessage("Device is in use. Please try again")
+        self.ui.btn_cancel.setText(i18n("Close"))
+        self.pds_messagebox.setMessage(i18n("Device is in use. Please try again"))
         self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
         # close message after 2 seconds
         QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
 
-
+    def no_disk_notification(self):
+        msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
+        msgBox.exec_()
+        sys.exit()
 
     def find_key(self, dic, val):
         """return the key of dictionary dic given the value"""
@@ -127,6 +129,9 @@ class QuickFormat(QtGui.QWidget):
         volumeList.clear()
 
         volumes = self.get_volumes()
+
+        if not volumes:
+            self.no_disk_notification()
 
         for volume in volumes:
             self.add_volume_to_list(volume)
@@ -184,7 +189,6 @@ class QuickFormat(QtGui.QWidget):
 
 
     def filter_file_system(self, fileSystem, icon):
-        print fileSystem
         if fileSystem!="" and str(icon).find("removable") >= 0\
                 and (str(fileSystem).startswith("ntfs") \
                 or str(fileSystem).startswith("vfat") \
