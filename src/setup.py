@@ -23,6 +23,8 @@ from distutils.command.install import install
 
 from code.quickformat import about
 
+PROJECT = about.appName
+
 def update_messages():
     # Create empty directory
     os.system("rm -rf .tmp")
@@ -105,7 +107,7 @@ class Install(install):
 
         # Install desktop files
         print "Installing desktop files..."
-        #shutil.copy("resources/%s.desktop" % about.modName, apps_dir)
+        shutil.copy("data/%s.desktop" % PROJECT, apps_dir)
 
         # Install codes
         print "Installing codes..."
