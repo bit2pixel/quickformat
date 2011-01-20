@@ -14,12 +14,11 @@ from PyKDE4.kdecore import KAboutData, ki18n
 
 # Application Data
 appName     = "quickformat"
-modName     = "quickformat"
-programName = ki18n("Display Settings")
-version     = "0.9.95"
-description = ki18n("Display Configuration Tool")
+programName = ki18n("Quick Format")
+version     = "1.0.0"
+description = ki18n("Removable Device Formatting Tool")
 license     = KAboutData.License_GPL
-copyright   = ki18n("(c) 2009 TUBITAK/UEKAE")
+copyright   = ki18n("(c) 2011 TUBITAK/UEKAE")
 text        = ki18n(None)
 homePage    = "http://www.pardus.org.tr/eng/projects"
 bugEmail    = "bugs@pardus.org.tr"
@@ -28,6 +27,3 @@ aboutData   = KAboutData(appName, catalog, programName, version, description, li
 
 # Author(s)
 aboutData.addAuthor(ki18n("Renan Cakirerk"), ki18n("Current Maintainer"))
-
-# Use this if icon name is different than appName
-aboutData.setProgramIconName("preferences-desktop-display")

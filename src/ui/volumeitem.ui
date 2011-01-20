@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -84,8 +84,11 @@
             <bold>false</bold>
            </font>
           </property>
+          <property name="toolTip">
+           <string notr="true"/>
+          </property>
           <property name="text">
-           <string>Brand USB Storage Device</string>
+           <string notr="true">Brand USB Storage Device</string>
           </property>
          </widget>
         </item>
@@ -113,8 +116,11 @@
             <pointsize>8</pointsize>
            </font>
           </property>
+          <property name="toolTip">
+           <string notr="true"/>
+          </property>
           <property name="text">
-           <string>ext4</string>
+           <string notr="true">ext4</string>
           </property>
          </widget>
         </item>
@@ -142,8 +148,11 @@
             <italic>false</italic>
            </font>
           </property>
+          <property name="toolTip">
+           <string notr="true"/>
+          </property>
           <property name="text">
-           <string>sdaX</string>
+           <string notr="true">sdaX</string>
           </property>
          </widget>
         </item>
@@ -196,8 +205,11 @@
           <bold>true</bold>
          </font>
         </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
         <property name="text">
-         <string>label</string>
+         <string notr="true">label</string>
         </property>
        </widget>
       </item>
