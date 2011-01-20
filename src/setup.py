@@ -32,8 +32,15 @@ def update_messages():
         os.system("pykdeuic4 -o .tmp/ui_%s.py ui/%s" % (filename.split(".")[0], filename))
     # Collect Python files
     os.system("cp -R code/* .tmp/")
+    os.system("cp -R code/quickformat/* .tmp/")
     # Generate POT file
-    os.system("find .tmp -name '*.py' | xargs xgettext --default-domain=%s --keyword=_ --keyword=i18n --keyword=ki18n -o po/%s.pot" % (about.catalog, about.catalog))
+    os.system("find .tmp -name '*.py' | xargs xgettext --kde \
+                -ci18n -ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3 -ktr2i18n:1 \
+                        -kI18N_NOOP:1 -kI18N_NOOP2:1c,2 -kaliasLocale -kki18n:1 -kki18nc:1c,2 \
+                        -kki18np:1,2 -kki18ncp:1c,2,3 \
+            --default-domain=%s --keyword=_ --keyword=i18n --keyword=ki18n -o po/%s.pot" % (about.catalog, about.catalog))
+
+
     # Update PO files
     for item in os.listdir("po"):
         if item.endswith(".po"):
