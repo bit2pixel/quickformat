@@ -2,6 +2,7 @@
 Exec=quickformat
 Icon=draw-eraser
 Type=Application
+Categories=Qt;KDE;System;
 
 _Name=QuickFormat
 _GenericName=Removable Device Formatting Tool
