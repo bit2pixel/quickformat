@@ -40,6 +40,12 @@ def update_messages():
                 -kki18np:1,2 -kki18ncp:1c,2,3 \
                 --default-domain=%s --keyword=_ --keyword=i18n --keyword=ki18n -o po/%s.pot" % (about.catalog, about.catalog))
 
+    # Collect desktop files
+    os.system("cp -R data/*.desktop.in .tmp/")
+
+    # Generate headers for desktop files
+    for filename in glob.glob(".tmp/*.desktop.in"):
+        os.system("intltool-extract --type=gettext/ini %s" % filename)
 
     # Update PO files
     for item in os.listdir("po"):
@@ -90,6 +96,12 @@ class Install(install):
         makeDirs(service_dir)
         makeDirs(apps_dir)
         makeDirs(project_dir)
+
+        # Install desktop files
+        print "Installing desktop files..."
+
+        for filename in glob.glob("data/*.desktop.in"):
+            os.system("intltool-merge -d po %s %s" % (filename, filename[:-3]))
 
         # Install desktop files
         print "Installing desktop files..."
