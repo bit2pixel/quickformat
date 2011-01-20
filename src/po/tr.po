@@ -34,7 +34,7 @@ msgstr "Birim Etiketi"
 
 #: .tmp/ui_quickformat.py:173
 msgid "Format"
-msgstr "Formatla"
+msgstr "Biçimlendir"
 
 #: .tmp/ui_quickformat.py:174
 msgid "Cancel"
