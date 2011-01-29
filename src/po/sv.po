@@ -1,81 +1,83 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Patrik Karlsson <patrik@trixon.se>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-01-20 14:52+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2011-01-29 08:00+0100\n"
+"Last-Translator: Patrik Karlsson <patrik@trixon.se>\n"
+"Language-Team: Swedish <pardus-translators@pardus.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Generator: Lokalize 1.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: .tmp/ui_quickformat.py:169 .tmp/about.py:17 .tmp/quickformat/about.py:17
 msgid "Quick Format"
-msgstr ""
+msgstr "Snabbformatering"
 
 #: .tmp/ui_quickformat.py:170
 msgid "Volume Name"
-msgstr ""
+msgstr "Volymnamn"
 
 #: .tmp/ui_quickformat.py:171
 msgid "File System"
-msgstr ""
+msgstr "Filsystem"
 
 #: .tmp/ui_quickformat.py:172
 msgid "Volume Label"
-msgstr ""
+msgstr "Volymetikett"
 
 #: .tmp/ui_quickformat.py:173
 msgid "Format"
-msgstr ""
+msgstr "Formatera"
 
 #: .tmp/ui_quickformat.py:174
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: .tmp/about.py:19 .tmp/quickformat/about.py:19
 msgid "Removable Device Formatting Tool"
-msgstr ""
+msgstr "Formateringsverktyg för flyttbara enheter"
 
 #: .tmp/about.py:21 .tmp/quickformat/about.py:21
 msgid "(c) 2011 TUBITAK/UEKAE"
-msgstr ""
+msgstr "(c) 2011 TUBITAK/UEKAE"
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Renan Cakirerk"
-msgstr ""
+msgstr "Renan Cakirerk"
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Current Maintainer"
-msgstr ""
+msgstr "Nuvarande underhållare"
 
 #: .tmp/quickformat.py:101
 msgid "Please wait while formatting..."
-msgstr ""
+msgstr "Vänligen vänta, formaterar..."
 
 #: .tmp/quickformat.py:105 .tmp/quickformat.py:112
 msgid "Close"
-msgstr ""
+msgstr "Stäng"
 
 #: .tmp/quickformat.py:106
 msgid "Format completed successfully."
-msgstr ""
+msgstr "Formateringen slutfördes framgångsrikt"
 
 #: .tmp/quickformat.py:113
 msgid "Device is in use. Please try again"
-msgstr ""
+msgstr "Enheten används. Vänligen försök igen"
 
 #: .tmp/quickformat.py:119
 msgid "QuickFormat"
-msgstr ""
+msgstr "Snabbformatering"
 
 #: .tmp/quickformat.py:119
 msgid "There aren't any removable devices."
-msgstr ""
+msgstr "Det finns inte några flyttbara enheter"
+
