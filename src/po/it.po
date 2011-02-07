@@ -18,7 +18,7 @@ msgstr ""
 
 #: .tmp/ui_quickformat.py:169 .tmp/about.py:17 .tmp/quickformat/about.py:17
 msgid "Quick Format"
-msgstr ""
+msgstr "Formattazione Veloce"
 
 #: .tmp/ui_quickformat.py:170
 msgid "Volume Name"
@@ -30,7 +30,7 @@ msgstr "Sistema dei File"
 
 #: .tmp/ui_quickformat.py:172
 msgid "Volume Label"
-msgstr ""
+msgstr "Etichetta del Volume"
 
 #: .tmp/ui_quickformat.py:173
 msgid "Format"
@@ -42,7 +42,7 @@ msgstr "Cancella"
 
 #: .tmp/about.py:19 .tmp/quickformat/about.py:19
 msgid "Removable Device Formatting Tool"
-msgstr ""
+msgstr "Utensile di Formattazione per Dispositivi Rimovibili "
 
 #: .tmp/about.py:21 .tmp/quickformat/about.py:21
 msgid "(c) 2011 TUBITAK/UEKAE"
@@ -54,11 +54,11 @@ msgstr "Renan Cakirerk"
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Current Maintainer"
-msgstr ""
+msgstr "Sviluppatore attuale"
 
 #: .tmp/quickformat.py:101
 msgid "Please wait while formatting..."
-msgstr ""
+msgstr "Si prega di attendere la formattazione..."
 
 #: .tmp/quickformat.py:105 .tmp/quickformat.py:112
 msgid "Close"
@@ -66,16 +66,16 @@ msgstr "Chiudi"
 
 #: .tmp/quickformat.py:106
 msgid "Format completed successfully."
-msgstr ""
+msgstr "Formato completato con successo."
 
 #: .tmp/quickformat.py:113
 msgid "Device is in use. Please try again"
-msgstr ""
+msgstr "Il dispositivo è in uso. Si prega di riprovare"
 
 #: .tmp/quickformat.py:119
 msgid "QuickFormat"
-msgstr ""
+msgstr "FormattazioneVeloce"
 
 #: .tmp/quickformat.py:119
 msgid "There aren't any removable devices."
-msgstr ""
+msgstr "Non ci sono dispositivi rimovibili."
