@@ -55,7 +55,7 @@ msgstr ""
 
 #: .tmp/about.py:29 .tmp/quickformat/about.py:29
 msgid "Current Maintainer"
-msgstr ""
+msgstr "Responsable actual"
 
 #: .tmp/quickformat.py:101
 msgid "Please wait while formatting..."
@@ -71,10 +71,9 @@ msgstr "Formateo terminado exitosamente."
 
 #: .tmp/quickformat.py:113
 msgid "Device is in use. Please try again"
-msgstr "Dispositivo está siendo utilizado. Por fvor intente de nuevo"
+msgstr "Dispositivo está siendo utilizado. Por favor intente de nuevo"
 
 #: .tmp/quickformat.py:119
-#, fuzzy
 msgid "QuickFormat"
 msgstr "QuickFormat"
 
