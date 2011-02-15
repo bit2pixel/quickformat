@@ -17,7 +17,6 @@ msgstr ""
 "Language: \n"
 
 #: .tmp/ui_quickformat.py:169 .tmp/about.py:17 .tmp/quickformat/about.py:17
-#, fuzzy
 msgid "Quick Format"
 msgstr "Quick Format"
 
