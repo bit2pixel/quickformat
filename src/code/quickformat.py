@@ -30,12 +30,15 @@ fileSystems = { "Ext4":"ext4",
                 }
 
 class VolumeItem(Ui_VolumeItem, QtGui.QWidget):
-    def __init__(self, name, path, label, format, icon, parent = None):
+    def __init__(self, name, path, label, format, icon, size, disk, parent = None):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
+        self.disk.hide()
         self.name.setText(name)
         self.label.setText(label)
         self.path.setText(path)
+        #self.size.setText(size)
+        self.disk.setText(disk)
         self.format.setText("(%s)" % format)
         self.icon.setPixmap(icon)
 
@@ -60,8 +63,10 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_path = ""
         self.volume_to_format_type = ""
         self.volume_to_format_label = ""
+        self.volume_to_format_disk = ""
 
         self.__initial_selection__(self.initial_selection)
+
 
     def __initial_selection__(self, index):
         self.ui.volumeName.setCurrentIndex(index)
@@ -89,14 +94,13 @@ class QuickFormat(QtGui.QWidget):
     def __init_signals__(self):
         self.connect(self.ui.volumeName, SIGNAL("activated(int)"), self.set_info)
         self.connect(self.ui.btn_format, SIGNAL("clicked()"), self.format_disk)
-
         self.connect(self.ui.btn_cancel, SIGNAL("clicked()"), self.close)
 
     def hide_pds_messagebox(self):
         self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
 
     def format_disk(self):
-        self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text())
+        self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text(), self.volume_to_format_disk)
         self.connect(self.formatter, SIGNAL("format_started()"), self.format_started)
         self.connect(self.formatter, SIGNAL("format_successful()"), self.format_successful)
         self.connect(self.formatter, SIGNAL("format_failed()"), self.format_failed)
@@ -171,6 +175,8 @@ class QuickFormat(QtGui.QWidget):
         label = volumeItem.label.text()
         path = volumeItem.path.text()
         icon = volumeItem.icon.pixmap()
+        size = volumeItem.size.text()
+        disk = volumeItem.disk.text()
         fileSystem = str(volumeItem.format.text()).strip("()")
 
         # find fileSystem index from list
@@ -185,13 +191,18 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_path = path
         self.volume_to_format_type = fileSystem
         self.volume_to_format_label = label
+        self.volume_to_format_disk = disk
 
 
-    def filter_file_system(self, fileSystem, icon):
+    def filter_file_system(self, volume):
+        fileSystem = self.get_volume_file_system(volume)
+        icon = volume.icon()
+
         if fileSystem!="" and str(icon).find("removable") >= 0\
                 and (str(fileSystem).startswith("ntfs") \
                 or str(fileSystem).startswith("vfat") \
                 or str(fileSystem).startswith("ext")):
+
             return True
 
     def get_volumes(self):
@@ -200,7 +211,7 @@ class QuickFormat(QtGui.QWidget):
         # Get volumes
         for volume in Solid.Device.listFromType(Solid.StorageDrive.StorageVolume):
             # Apply filter
-            if self.filter_file_system(self.get_volume_file_system(volume), volume.icon()):
+            if self.filter_file_system(volume):
                 volumes.append(volume)
         return volumes
 
@@ -221,6 +232,12 @@ class QuickFormat(QtGui.QWidget):
         """ returns the disk name that the volume resides on """
         return "%s %s" % (volume.parent().vendor(), volume.parent().product())
 
+    def get_disk_size(self, volume):
+        return volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).size()
+
+    def get_disk_path(self, volume):
+        return volume.parent().asDeviceInterface(Solid.Block.Block).device()
+
     def prepare_selection_text(self, diskName, volumePath, volumeName):
         if volumeName != "":
             return "%s (%s)" % (volumeName, volumePath)
@@ -234,9 +251,11 @@ class QuickFormat(QtGui.QWidget):
         volumeInfo["volume_path"] = self.get_volume_path(volume)
         volumeInfo["volume_file_system"] = self.get_volume_file_system(volume)
         volumeInfo["volume_icon"] = self.get_volume_icon(volume.icon())
+        volumeInfo["disk_path"] = self.get_disk_path(volume)
+        volumeInfo["disk_size"] = self.get_disk_size(volume)
 
         # Create custom widget
-        widget = VolumeItem(volumeInfo["disk_name"], volumeInfo["volume_path"], volumeInfo["volume_name"], volumeInfo["volume_file_system"], volumeInfo["volume_icon"], self.ui.listWidget)
+        widget = VolumeItem(volumeInfo["disk_name"], volumeInfo["volume_path"], volumeInfo["volume_name"], volumeInfo["volume_file_system"], volumeInfo["volume_icon"], volumeInfo["disk_size"], volumeInfo["disk_path"], self.ui.listWidget)
 
         # Create list widget item
         # First parameter is the text shown on the combobox when a selection is made
@@ -263,7 +282,7 @@ if __name__ == "__main__":
             sys.argv = [sys.argv[0]]
 
     KCmdLineArgs.init(sys.argv, aboutData)
-    app =  kdeui.KApplication()
+    app = kdeui.KApplication()
 
     quick_format = QuickFormat(args = args)
     quick_format.show()
