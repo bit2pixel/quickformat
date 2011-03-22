@@ -6,13 +6,16 @@ from PyQt4.QtCore import QSize, SIGNAL, QThread
 from quickformat.disktools import DiskTools
 from subprocess import Popen, PIPE, STDOUT, call
 
+import parted
+
 class Formatter(QThread):
-    def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label):
+    def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label, volume_to_format_disk):
         QThread.__init__(self)
 
         self.volumeToFormat = str(volume_to_format_path)
         self.fs = str(volume_to_format_type)
         self.volumeLabel = str(volume_to_format_label)
+        self.disk = str(volume_to_format_disk)
 
         self.diskTools = DiskTools()
 
@@ -44,7 +47,7 @@ class Formatter(QThread):
             except:
                 return False
 
-        # If NTFS is selected then activate quick format
+        # If NTFS is selected then activate quick formating option
         if self.fs == "ntfs-3g":
             self.fs = "ntfs"
             self.quickOption = " -Q "
@@ -58,9 +61,25 @@ class Formatter(QThread):
         # If VFAT then labeling parameter changes
         if self.fs == "vfat":
             self.labelingCommand = "-n"
+            self.flag = "fat32"
         else:
             self.labelingCommand = "-L"
+            self.flag = self.fs
 
+        # Change Device Flags With Parted Module
+        print "DISK %s" % self.disk
+        parted_device = parted.Device(self.disk)
+        parted_disk = parted.Disk(parted_device)
+
+        parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
+
+        parted_partition.fileSystem =  parted.fileSystemType[self.flag]
+
+        # Commit Changes
+        parted_disk.commit()
+        parted_device.close()
+
+        # udev trigger
 
         # Command to execute
         command = "mkfs -t " + self.fs + self.quickOption + " " + self.labelingCommand + " '" + self.volumeLabel + "' " + self.volumeToFormat
