@@ -20,6 +20,8 @@ from pds.gui import PMessageBox, OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 
 import sys, os
 
+import dbus
+
 volumeList = {'':''}
 
 fileSystems = { "Ext4":"ext4",
@@ -66,6 +68,22 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_disk = ""
 
         self.__initial_selection__(self.initial_selection)
+
+
+        # HAL related variables.
+        # These are used for configuring communication with 'hald'.
+        serviceName = 'org.freedesktop.Hal'
+        interfaceName =  '/org/freedesktop/Hal/Manager'
+        managerName = 'org.freedesktop.Hal.Manager'
+
+
+        # Connect to SystemBus
+        systemBus = dbus.SystemBus()
+
+        # Connect to Device{Added/Removed} signals
+        systemBus.add_signal_receiver(self.refresh_volume_list, 'DeviceAdded',  managerName, serviceName, interfaceName)
+        systemBus.add_signal_receiver(self.refresh_volume_list, 'DeviceRemoved',  managerName, serviceName, interfaceName)
+
 
 
     def __initial_selection__(self, index):
@@ -135,6 +153,8 @@ class QuickFormat(QtGui.QWidget):
         return [k for k, v in dic.iteritems() if v == val][0]
 
     def generate_volume_list(self):
+        self.format_failed()
+        self.ui.volumeName.hidePopup()
         selectedIndex = 0
         currentIndex = 0
 
@@ -152,7 +172,7 @@ class QuickFormat(QtGui.QWidget):
         self.ui.volumeName.setCurrentIndex(selectedIndex)
 
 
-    def refresh_volume_list(self):
+    def refresh_volume_list(self, what):
         self.ui.listWidget.clear()
         self.generate_volume_list()
 
@@ -307,6 +327,11 @@ if __name__ == "__main__":
         if not sys.argv[1].startswith("-"):
             args = sys.argv
             sys.argv = [sys.argv[0]]
+
+    # DBUS MainLoop
+    if not dbus.get_default_main_loop():
+        from dbus.mainloop.qt import DBusQtMainLoop
+        DBusQtMainLoop(set_as_default = True)
 
     KCmdLineArgs.init(sys.argv, aboutData)
     app = kdeui.KApplication()
