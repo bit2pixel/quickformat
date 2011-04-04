@@ -58,6 +58,8 @@ class Formatter(QThread):
         if self.volumeLabel == "":
             self.volumeLabel = "My Disk"
 
+        self.flag = ""
+
         # If VFAT then labeling parameter changes
         if self.fs == "vfat":
             self.labelingCommand = "-n"
@@ -68,16 +70,28 @@ class Formatter(QThread):
 
         # Change Device Flags With Parted Module
         print "DISK %s" % self.disk
-        parted_device = parted.Device(self.disk)
+
+        #parted_device = parted.Device(self.disk)
+        parted_device = parted.Device("/dev/sdh")
         parted_disk = parted.Disk(parted_device)
 
         parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
 
-        parted_partition.fileSystem =  parted.fileSystemType[self.flag]
+        print "---------------"
+        print self.volumeToFormat
+
+
+        parted_partition.fileSystem = parted.fileSystemType[self.flag]
+
+        # Get possible flags
+        parted_flags = parted.partitionFlag.values()
+
+        # Remove any Flags
+        for flag in parted_partition.getFlagsAsString().split(", "):
+            parted_partition.unsetFlag(parted_flags.index(flag) + 1)
 
         # Commit Changes
         parted_disk.commit()
-        parted_device.close()
 
         # udev trigger
 
