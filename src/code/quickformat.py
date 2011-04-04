@@ -95,12 +95,13 @@ class QuickFormat(QtGui.QWidget):
         self.connect(self.ui.volumeName, SIGNAL("activated(int)"), self.set_info)
         self.connect(self.ui.btn_format, SIGNAL("clicked()"), self.format_disk)
         self.connect(self.ui.btn_cancel, SIGNAL("clicked()"), self.close)
+        self.connect(self.ui.btn_refresh, SIGNAL("clicked()"), self.refresh_volume_list)
 
     def hide_pds_messagebox(self):
         self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
 
     def format_disk(self):
-        self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text(), self.volume_to_format_disk)
+        self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text(), self.volume_to_format_path)
         self.connect(self.formatter, SIGNAL("format_started()"), self.format_started)
         self.connect(self.formatter, SIGNAL("format_successful()"), self.format_successful)
         self.connect(self.formatter, SIGNAL("format_failed()"), self.format_failed)
@@ -150,7 +151,14 @@ class QuickFormat(QtGui.QWidget):
         # select the appropriate volume from list
         self.ui.volumeName.setCurrentIndex(selectedIndex)
 
+
+    def refresh_volume_list(self):
+        self.ui.listWidget.clear()
+        self.generate_volume_list()
+
     def generate_file_system_list(self):
+        self.ui.fileSystem.clear()
+
         # Temporary sapce for file system list
         self.tempFileSystems = []
 
@@ -194,11 +202,30 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_disk = disk
 
 
+    def is_removable(self, volume):
+        try:
+            if volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).isRemovable():
+                return True
+        except:
+            pass
+
+        return False
+
+
+    def is_hotpluggable(self, volume):
+        try:
+            if volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).isHotpluggable():
+                return True
+        except:
+            pass
+
+        return False
+
+
     def filter_file_system(self, volume):
         fileSystem = self.get_volume_file_system(volume)
-        icon = volume.icon()
 
-        if fileSystem!="" and str(icon).find("removable") >= 0\
+        if self.is_removable(volume) and self.is_hotpluggable(volume)\
                 and (str(fileSystem).startswith("ntfs") \
                 or str(fileSystem).startswith("vfat") \
                 or str(fileSystem).startswith("ext")):
