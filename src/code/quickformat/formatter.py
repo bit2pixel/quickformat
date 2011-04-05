@@ -71,8 +71,8 @@ class Formatter(QThread):
         # Change Device Flags With Parted Module
         print "DISK %s" % self.disk
 
-        #parted_device = parted.Device(self.disk)
-        parted_device = parted.Device("/dev/sdh")
+        parted_device = parted.Device(self.disk)
+        #parted_device = parted.Device("/dev/sdh")
         parted_disk = parted.Disk(parted_device)
 
         parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
@@ -87,8 +87,11 @@ class Formatter(QThread):
         parted_flags = parted.partitionFlag.values()
 
         # Remove any Flags
-        for flag in parted_partition.getFlagsAsString().split(", "):
-            parted_partition.unsetFlag(parted_flags.index(flag) + 1)
+        flags_found = parted_partition.getFlagsAsString().split(", ")
+
+        if len(flags_found) == 0:
+            for flag in flags_found:
+                parted_partition.unsetFlag(parted_flags.index(flag) + 1)
 
         # Commit Changes
         parted_disk.commit()
