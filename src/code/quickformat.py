@@ -69,22 +69,12 @@ class QuickFormat(QtGui.QWidget):
 
         self.__initial_selection__(self.initial_selection)
 
+        self.refreshing_disks = False
 
-        # HAL related variables.
-        # These are used for configuring communication with 'hald'.
-        serviceName = 'org.freedesktop.Hal'
-        interfaceName =  '/org/freedesktop/Hal/Manager'
-        managerName = 'org.freedesktop.Hal.Manager'
-
-
-        # Connect to SystemBus
-        systemBus = dbus.SystemBus()
-
-        # Connect to Device{Added/Removed} signals
-        systemBus.add_signal_receiver(self.refresh_volume_list, 'DeviceAdded',  managerName, serviceName, interfaceName)
-        systemBus.add_signal_receiver(self.refresh_volume_list, 'DeviceRemoved',  managerName, serviceName, interfaceName)
-
-
+        # Monitor USB ports for any new devices
+        notifier = Solid.DeviceNotifier().instance()
+        self.connect(notifier, SIGNAL("deviceAdded(const QString&)"), self.refresh_volume_list)
+        self.connect(notifier, SIGNAL("deviceRemoved(const QString&)"), self.refresh_volume_list)
 
     def __initial_selection__(self, index):
         self.ui.volumeName.setCurrentIndex(index)
@@ -113,10 +103,10 @@ class QuickFormat(QtGui.QWidget):
         self.connect(self.ui.volumeName, SIGNAL("activated(int)"), self.set_info)
         self.connect(self.ui.btn_format, SIGNAL("clicked()"), self.format_disk)
         self.connect(self.ui.btn_cancel, SIGNAL("clicked()"), self.close)
-        self.connect(self.ui.btn_refresh, SIGNAL("clicked()"), self.refresh_volume_list)
 
     def hide_pds_messagebox(self):
         self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
+        self.refreshing_disks = False
 
     def format_disk(self):
         self.formatter = Formatter(self.volume_to_format_path, fileSystems[str(self.ui.fileSystem.currentText())], self.ui.volumeLabel.text(), self.volume_to_format_path)
@@ -136,6 +126,15 @@ class QuickFormat(QtGui.QWidget):
         # close message after 2 seconds
         QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
 
+    def refreshing_disk_list(self):
+        if not self.refreshing_disks:
+            self.pds_messagebox.setMessage(i18n("Loading disks..."))
+            self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+            # close message after 2 seconds
+            QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
+        else:
+            self.refreshing_disks == True
+
     def format_failed(self):
         self.ui.btn_cancel.setText(i18n("Close"))
         self.pds_messagebox.setMessage(i18n("Device is in use. Please try again"))
@@ -153,7 +152,6 @@ class QuickFormat(QtGui.QWidget):
         return [k for k, v in dic.iteritems() if v == val][0]
 
     def generate_volume_list(self):
-        self.format_failed()
         self.ui.volumeName.hidePopup()
         selectedIndex = 0
         currentIndex = 0
@@ -172,9 +170,11 @@ class QuickFormat(QtGui.QWidget):
         self.ui.volumeName.setCurrentIndex(selectedIndex)
 
 
-    def refresh_volume_list(self, what):
-        self.ui.listWidget.clear()
-        self.generate_volume_list()
+    def refresh_volume_list(self, device):
+        if str(device).find("UDisks")>=0:
+            self.refreshing_disk_list()
+            self.ui.listWidget.clear()
+            self.generate_volume_list()
 
     def generate_file_system_list(self):
         self.ui.fileSystem.clear()
