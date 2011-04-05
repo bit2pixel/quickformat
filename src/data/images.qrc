@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images">
+    <file>images/dialog-ok-apply.png</file>
     <file>images/view-refresh.png</file>
     <file>images/dialog-close.png</file>
     <file>images/draw-eraser.png</file>
