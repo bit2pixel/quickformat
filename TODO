@@ -1,4 +1,6 @@
-Fix label displaying in the volume combobox
-Correct lbl's in the UI
-Popup a warning message before formatting
-Protection against root partition formatting
+- Fix label size adjustment on first load (ask Gokmen)
+- Switch between HAL / UDisk according to users system
+- Test all filesystems
+- Test ISO USB Flashdisks
+- Test with a USB Harddisk
+- Embed pds partially
