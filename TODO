@@ -4,3 +4,6 @@
 - Test ISO USB Flashdisks
 - Test with a USB Harddisk
 - Embed pds partially
+- Refactor code, the notifications repeats code, write more modular
+- Add comments
+- Add README
