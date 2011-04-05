@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-20 14:52+0200\n"
+"POT-Creation-Date: 2011-04-06 01:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,66 +16,78 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .tmp/ui_quickformat.py:169 .tmp/about.py:17 .tmp/quickformat/about.py:17
+#: .tmp/ui_quickformat.py:209 .tmp/quickformat/about.py:17 .tmp/about.py:17
 msgid "Quick Format"
 msgstr ""
 
-#: .tmp/ui_quickformat.py:170
-msgid "Volume Name"
-msgstr ""
-
-#: .tmp/ui_quickformat.py:171
+#: .tmp/ui_quickformat.py:210
 msgid "File System"
 msgstr ""
 
-#: .tmp/ui_quickformat.py:172
+#: .tmp/ui_quickformat.py:211
 msgid "Volume Label"
 msgstr ""
 
-#: .tmp/ui_quickformat.py:173
+#: .tmp/ui_quickformat.py:212
+msgid "Volume Name"
+msgstr ""
+
+#: .tmp/ui_quickformat.py:213
 msgid "Format"
 msgstr ""
 
-#: .tmp/ui_quickformat.py:174
-msgid "Cancel"
-msgstr ""
-
-#: .tmp/about.py:19 .tmp/quickformat/about.py:19
-msgid "Removable Device Formatting Tool"
-msgstr ""
-
-#: .tmp/about.py:21 .tmp/quickformat/about.py:21
-msgid "(c) 2011 TUBITAK/UEKAE"
-msgstr ""
-
-#: .tmp/about.py:29 .tmp/quickformat/about.py:29
-msgid "Renan Cakirerk"
-msgstr ""
-
-#: .tmp/about.py:29 .tmp/quickformat/about.py:29
-msgid "Current Maintainer"
-msgstr ""
-
-#: .tmp/quickformat.py:101
-msgid "Please wait while formatting..."
-msgstr ""
-
-#: .tmp/quickformat.py:105 .tmp/quickformat.py:112
+#: .tmp/ui_quickformat.py:214
 msgid "Close"
 msgstr ""
 
-#: .tmp/quickformat.py:106
+#: .tmp/notifier.py:75 .tmp/quickformat/notifier.py:75
+msgid "OK"
+msgstr ""
+
+#: .tmp/quickformat.py:137
+msgid "Please wait while formatting..."
+msgstr ""
+
+#: .tmp/quickformat.py:142
 msgid "Format completed successfully."
 msgstr ""
 
-#: .tmp/quickformat.py:113
-msgid "Device is in use. Please try again"
+#: .tmp/quickformat.py:148
+msgid "Device is in use. Please try again."
 msgstr ""
 
-#: .tmp/quickformat.py:119
+#: .tmp/quickformat.py:152
 msgid "QuickFormat"
 msgstr ""
 
-#: .tmp/quickformat.py:119
+#: .tmp/quickformat.py:152
 msgid "There aren't any removable devices."
+msgstr ""
+
+#: .tmp/quickformat.py:181
+msgid "Loading disks..."
+msgstr ""
+
+#: .tmp/quickformat/about.py:19 .tmp/about.py:19
+msgid "Removable Device Formatting Tool"
+msgstr ""
+
+#: .tmp/quickformat/about.py:21 .tmp/about.py:21
+msgid "(c) 2011 TUBITAK/UEKAE"
+msgstr ""
+
+#: .tmp/quickformat/about.py:29 .tmp/about.py:29
+msgid "Renan Cakirerk"
+msgstr ""
+
+#: .tmp/quickformat/about.py:29 .tmp/about.py:29
+msgid "Current Maintainer"
+msgstr ""
+
+#: .tmp/ui_volumeitem.py:143
+msgid ":"
+msgstr ""
+
+#: .tmp/ui_volumeitem.py:144
+msgid "-"
 msgstr ""
