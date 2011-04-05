@@ -12,11 +12,13 @@ from PyKDE4.kdecore import KCmdLineArgs
 from quickformat.ui_quickformat import Ui_QuickFormat
 from quickformat.formatter import Formatter
 
+from quickformat.notifier import Notifier
+
 from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
 from pds.thread import PThread
-from pds.gui import PAbstractBox, OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
+from pds.gui import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 
 import sys, os
 
@@ -40,93 +42,19 @@ class VolumeItem(Ui_VolumeItem, QtGui.QWidget):
         self.label.setText(label)
         self.path.setText(path)
         self.disk.setText(disk)
-        size_human = str(size / 1024)
+        size = size / 1024.0 ** 2
+        print size
+        if size >= 1000 and size < 100000:
+            size = str("%.2f" % (size / 1024.0)) + " GB"
+        elif size > 100000:
+            size = str(int(size / 1024)) + " GB"
+        else:
+            size = str(int(size)) + " MB"
+
+        size_human = size
         self.size.setText(size_human)
         self.format.setText("(%s)" % format)
         self.icon.setPixmap(icon)
-
-
-from pds.qprogressindicator import QProgressIndicator
-
-class MessageBox(PAbstractBox):
-
-    def __init__(self, parent):
-        PAbstractBox.__init__(self, parent)
-
-        self.verticalLayout = QtGui.QVBoxLayout(self)
-        self.verticalLayout.setSpacing(20)
-        self.verticalLayout.setObjectName("verticalLayout")
-
-        spacerItem = QtGui.QSpacerItem(20, 139, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-
-        self.verticalLayout.addItem(spacerItem)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setSpacing(10)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem1)
-
-        self.busy = QProgressIndicator(self, "white")
-        self.busy.hide()
-        self.horizontalLayout_2.addWidget(self.busy)
-
-        self.label = QtGui.QLabel(self)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setWordWrap(True)
-        self.label.setIndent(0)
-
-        self.label.setObjectName("label")
-        self.horizontalLayout_2.addWidget(self.label)
-
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem2)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem3)
-
-        self.okButton = QtGui.QPushButton(self)
-        self.okButton.setStyleSheet("color: #222222")
-        self.okButton.setObjectName("okButton")
-        self.okButton.setText(i18n("OK"))
-        self.okButton.hide()
-
-        self.horizontalLayout.addWidget(self.okButton)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem4)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        spacerItem5 = QtGui.QSpacerItem(20, 138, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem5)
-
-        self._animation = 2
-        self._duration = 500
-
-        self.okButton.clicked.connect(self.hideBox)
-
-    def hideBox(self):
-        self.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
-        self.okButton.hide()
-
-    def setMessage(self, message, button=False):
-        if message == '':
-            self.label.hide()
-        else:
-            self.label.setText(message)
-            self.label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.adjustSize()
-
-    def setIcon(self, icon=None):
-        if not icon:
-            self.icon.hide()
-        else:
-            self.icon.setPixmap(icon.pixmap(22, 22))
-            self.icon.show()
-        self.adjustSize()
 
 
 class QuickFormat(QtGui.QWidget):
@@ -137,12 +65,15 @@ class QuickFormat(QtGui.QWidget):
         self.ui = Ui_QuickFormat()
         self.ui.setupUi(self)
 
+        self.initial_selection = 0
+
         self.__process_args__()
 
         self.__init_signals__()
         self.__set_custom_widgets__()
 
         self.__init_messagebox__()
+
 
         self.generate_volume_list()
         self.generate_file_system_list()
@@ -168,11 +99,14 @@ class QuickFormat(QtGui.QWidget):
         print self.volume_to_format_path, self.volume_to_format_type, self.volume_to_format_label
 
     def __init_messagebox__(self):
-        self.pds_messagebox = MessageBox(self)
+        self.pds_messagebox = Notifier(self)
         self.pds_messagebox.enableOverlay()
 
         self.pds_messagebox.busy.busy()
         self.pds_messagebox.setStyleSheet("color:white")
+
+        self.pds_messagebox.adjustSize()
+        self.pds_messagebox.label.adjustSize()
 
     def __set_custom_widgets__(self):
         self.ui.listWidget = QtGui.QListWidget(self)
@@ -200,25 +134,19 @@ class QuickFormat(QtGui.QWidget):
 
     def slot_format_started(self):
         self.formatting = True
-        self.pds_messagebox.busy.show()
-        self.pds_messagebox.setMessage(i18n("Please wait while formatting..."))
+        self.pds_messagebox.setMessage(i18n("Please wait while formatting..."), button=False, indicator=True)
         self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
 
     def slot_format_successful(self):
-        self.ui.btn_cancel.setText(i18n("Close"))
-        self.pds_messagebox.busy.hide()
-        self.pds_messagebox.setMessage(i18n("Format completed successfully."))
-        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
-        self.pds_messagebox.okButton.show()
         self.formatting = False
+        self.pds_messagebox.setMessage(i18n("Format completed successfully."), button=True, indicator=False, icon=True)
+        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        self.refresh_volume_list(notify=False)
 
     def format_failed(self):
-        self.ui.btn_cancel.setText(i18n("Close"))
-        self.pds_messagebox.busy.hide()
-        self.pds_messagebox.setMessage(i18n("Device is in use. Please try again"))
-        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
-        self.pds_messagebox.okButton.show()
         self.formatting = False
+        self.pds_messagebox.setMessage(i18n("Device is in use. Please try again."), button=True, indicator=True)
+        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
 
     def no_disk_notification(self):
         msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
@@ -247,20 +175,28 @@ class QuickFormat(QtGui.QWidget):
         # select the appropriate volume from list
         self.ui.volumeName.setCurrentIndex(selectedIndex)
 
-    def slot_refreshing_disk_list(self):
+    def notify_refreshing_disk_list(self):
         if not self.refreshing_disks and not self.formatting:
             self.refreshing_disks == True
-            self.pds_messagebox.setMessage(i18n("Loading disks..."))
+            self.pds_messagebox.setMessage(i18n("Loading disks..."), button=False, indicator=True)
             self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
 
     def slot_refresh_volume_list(self, device):
+        print device
+        #FIX doesnt work if hal is used in system
         if str(device).find("UDisks")>=0:
-            self.slot_refreshing_disk_list()
-            self.ui.listWidget.clear()
-            self.generate_volume_list()
-            self.refreshing_disks = False
+            self.refresh_volume_list()
+        self.refresh_volume_list()
+
+    def refresh_volume_list(self, notify=True):
+        if notify:
+            self.notify_refreshing_disk_list()
             if not self.formatting:
                 QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
+
+        self.ui.listWidget.clear()
+        self.generate_volume_list()
+        self.refreshing_disks = False
 
     def hide_pds_messagebox(self):
         self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
@@ -311,31 +247,26 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_disk = disk
 
 
-    def is_removable(self, volume):
+    def get_device_bus(self, volume):
+        """ returns the bus of the device """
         try:
-            if volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).isRemovable():
-                return True
+            return volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).bus()
         except:
             pass
 
-        return False
-
-
-    def is_hotpluggable(self, volume):
-        try:
-            if volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).isHotpluggable():
-                return True
-        except:
-            pass
-
-        return False
-
+    def check_device(self, volume):
+        """ controls if the device is appropriate for formatting """
+        accepted_busses = [Solid.StorageDrive.Usb,
+                           Solid.StorageDrive.Ieee1394, # Firewire
+                           Solid.StorageDrive.Platform] # Card Readers
+        if self.get_device_bus(volume) in accepted_busses:
+            return True
 
     def filter_file_system(self, volume):
         fileSystem = self.get_volume_file_system(volume)
 
-        if self.is_removable(volume) and self.is_hotpluggable(volume)\
-                and (str(fileSystem).startswith("ntfs") \
+        if self.check_device(volume)\
+            and (str(fileSystem).startswith("ntfs") \
                 or str(fileSystem).startswith("vfat") \
                 or str(fileSystem).startswith("ext")):
 
@@ -404,8 +335,8 @@ class QuickFormat(QtGui.QWidget):
 
         item.setSizeHint(QSize(200,70))
 
-        self.initial_selection = 0
-
+        print "vp = %s, arg = %s" % (volumeInfo["volume_path"], self.volumePathArg)
+        print volumeInfo["volume_path"] == self.volumePathArg
         if volumeInfo["volume_path"] == self.volumePathArg:
             self.initial_selection = self.ui.listWidget.count() - 1
 
