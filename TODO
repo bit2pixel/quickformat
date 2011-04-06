@@ -3,6 +3,7 @@
 - Test all filesystems
 - Test ISO USB Flashdisks
 - Test with a USB Harddisk
+- Test with USB DVD writers (See if it doesnt recognize it as a formattable drive)
 - Embed pds partially
 - Refactor code, the notifications repeats code, write more modular
 - Add comments
