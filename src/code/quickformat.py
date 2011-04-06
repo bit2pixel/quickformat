@@ -18,7 +18,7 @@ from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
 from pds.thread import PThread
-from pds.gui import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
+from pds.gui import OUT, MIDCENTER, MIDCENTER, CURRENT, OUT
 
 import sys, os
 
@@ -135,18 +135,18 @@ class QuickFormat(QtGui.QWidget):
     def slot_format_started(self):
         self.formatting = True
         self.pds_messagebox.setMessage(i18n("Please wait while formatting..."), button=False, indicator=True)
-        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
 
     def slot_format_successful(self):
         self.formatting = False
         self.pds_messagebox.setMessage(i18n("Format completed successfully."), button=True, indicator=False, icon=True)
-        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
         self.refresh_volume_list(notify=False)
 
     def format_failed(self):
         self.formatting = False
         self.pds_messagebox.setMessage(i18n("Device is in use. Please try again."), button=True, indicator=True)
-        self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+        self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
 
     def no_disk_notification(self):
         msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
@@ -179,14 +179,13 @@ class QuickFormat(QtGui.QWidget):
         if not self.refreshing_disks and not self.formatting:
             self.refreshing_disks == True
             self.pds_messagebox.setMessage(i18n("Loading disks..."), button=False, indicator=True)
-            self.pds_messagebox.animate(start=TOPCENTER, stop=MIDCENTER)
+            self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
 
     def slot_refresh_volume_list(self, device):
         print device
         #FIX doesnt work if hal is used in system
         if str(device).find("UDisks")>=0:
             self.refresh_volume_list()
-        self.refresh_volume_list()
 
     def refresh_volume_list(self, notify=True):
         if notify:
@@ -199,7 +198,7 @@ class QuickFormat(QtGui.QWidget):
         self.refreshing_disks = False
 
     def hide_pds_messagebox(self):
-        self.pds_messagebox.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
+        self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER, direction=OUT)
 
     def generate_file_system_list(self):
         self.ui.fileSystem.clear()
