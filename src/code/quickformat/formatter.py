@@ -3,10 +3,12 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSize, SIGNAL, QThread
-from quickformat.disktools import DiskTools
+from quickformat.disktools import *
 from subprocess import Popen, PIPE, STDOUT, call
 
 import parted
+
+
 
 class Formatter(QThread):
     def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label, volume_to_format_disk):
@@ -17,15 +19,13 @@ class Formatter(QThread):
         self.volumeLabel = str(volume_to_format_label)
         self.disk = str(volume_to_format_disk)
 
-        self.diskTools = DiskTools()
-
     def run(self):
         self.emit(SIGNAL("format_started()"))
 
         self.formatted = self.format_disk()
 
         try:
-            self.diskTools.refreshPartitionTable(self.volumeToFormat[:8])
+            refreshPartitionTable(self.volumeToFormat[:8])
         except:
             print "ERROR: Cannot refresh partition"
 
@@ -35,15 +35,16 @@ class Formatter(QThread):
             self.emit(SIGNAL("format_successful()"))
 
     def is_device_mounted(self, volumePath):
-        for mountPoint in self.diskTools.mountList():
+        for mountPoint in mountList():
             if self.volumeToFormat == mountPoint[0]:
                 return True
 
     def format_disk(self):
         # If device is mounted then unmount
+
         if self.is_device_mounted(self.volumeToFormat) == True:
             try:
-                self.diskTools.umount(str(self.volumeToFormat))
+                umount(str(self.volumeToFormat))
             except:
                 return False
 

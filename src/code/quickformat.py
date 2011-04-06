@@ -346,7 +346,6 @@ class QuickFormat(QtGui.QWidget):
             self.initial_selection = self.ui.listWidget.count() - 1
 
 if __name__ == "__main__":
-
     args = []
     if len(sys.argv) >= 2:
         if not sys.argv[1].startswith("-"):
