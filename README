@@ -1,0 +1,5 @@
+to execute:
+xhost+
+sudo su -
+sudo python setup.py install
+quickformat
