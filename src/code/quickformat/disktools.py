@@ -11,95 +11,103 @@
 # Please read the COPYING file.
 #
 
-# Comar
-import comar
+import errno
+from time import sleep
+from fcntl import ioctl
+import os, sys
 
-class DiskTools:
-    def __init__(self):
-        self.link = comar.Link()
-        self.link.setLocale()
-        #self.link.useAgent()
-        self.package = self.getMainPackage()
+# Path to sync executable
+PATH_SYNC = '/bin/sync'
 
-    def listenSignals(self, func):
-        self.link.listenSignals("Disk.Manager", func)
+# Emulate required asm-generic/ioctl.h macros
+_IOC_NRBITS    = 8
+_IOC_TYPEBITS  = 8
+_IOC_SIZEBITS  = 14
+_IOC_DIRBITS   = 2
 
-    def getPackages(self):
-        """
-            List of packages that provide Disk.Manager model
-        """
-        return list(self.link.User.Manager)
+_IOC_NRMASK    = ((1 << _IOC_NRBITS)   - 1)
+_IOC_TYPEMASK  = ((1 << _IOC_TYPEBITS) - 1)
+_IOC_SIZEMASK  = ((1 << _IOC_SIZEBITS) - 1)
+_IOC_DIRMASK   = ((1 << _IOC_DIRBITS)  - 1)
 
-    def getMainPackage(self):
-        """
-            Package that's selected by system.
-            For now, it's hardcoded. This value should be given by COMAR.
-        """
-        packages = self.getPackages()
-        if not len(packages):
-            return None
-        return "mudur"
+_IOC_NRSHIFT   = 0
+_IOC_TYPESHIFT = (_IOC_NRSHIFT   + _IOC_NRBITS)
+_IOC_SIZESHIFT = (_IOC_TYPESHIFT + _IOC_TYPEBITS)
+_IOC_DIRSHIFT  = (_IOC_SIZESHIFT + _IOC_SIZEBITS)
 
-    def deviceList(self, func=None):
-        if func:
-            self.link.Disk.Manager[self.package].getDevices(async=func)
-        else:
-            return self.link.Disk.Manager[self.package].getDevices()
+# Direction bits.
+_IOC_NONE      = 0
+_IOC_WRITE     = 1
+_IOC_READ      = 2
 
-    def partitionList(self, device, func=None):
-        if func:
-            self.link.Disk.Manager[self.package].getDeviceParts(device, async=func)
-        else:
-            return self.link.Disk.Manager[self.package].getDeviceParts(device)
+def _IOC(dir,type,nr,size):
+    return (((dir)  << _IOC_DIRSHIFT)  | \
+            (type   << _IOC_TYPESHIFT) | \
+            ((nr)   << _IOC_NRSHIFT)   | \
+            ((size) << _IOC_SIZESHIFT))
 
-    def entryList(self, func=None):
-        if func:
-            self.link.Disk.Manager[self.package].listEntries(async=func)
-        else:
-            return self.link.Disk.Manager[self.package].listEntries()
+def _IO(type, nr):
+    """Note: type is specified in hex and nr in decimal."""
+    return _IOC(_IOC_NONE,(type),(nr),0)
 
-    def mountList(self, func=None):
-        if func:
-            self.link.Disk.Manager[self.package].getMounted(async=func)
-        else:
-            return self.link.Disk.Manager[self.package].getMounted()
+def BLKRRPART():
+    """Returns ioctl number for re-reading partition table."""
+    # Kernels >2.6.17 have BLKRRPART defined in include/linux/fs.h.
+    return _IO(0x12, 95)
+# -------------------------------------------
 
-    def getEntry(self, entry):
-        path, fsType, fs_options = self.link.Disk.Manager[self.package].getEntry(entry)
-        options = []
-        for key, val in fs_options.iteritems():
-            if len(val):
-                options.append("%s=%s" % (key, val))
-            else:
-                options.append("%s" % key)
-        options = ",".join(options)
-        return unicode(path), unicode(fsType), options
+def refreshPartitionTable(device):
+    """Re-Read partition table on device."""
 
-    def removeEntry(self, entry):
-        return self.link.Disk.Manager[self.package].removeEntry(entry)
+    try:
+        fd = os.open(device, os.O_RDONLY)
+    except EnvironmentError, (error, strerror):
+        print 'Could not open device %s. Reason: %s.'%(device, strerror)
+        sys.exit(-1)
 
-    def addEntry(self, device, path, fsType, fs_options):
-        if isinstance(fs_options, basestring):
-            options = {}
-            for opt in fs_options.split(","):
-                if "=" in opt:
-                    key, val = opt.split("=", 1)
-                    options[key] = val
-                else:
-                    options[opt] = ""
-            fs_options = options
-        return self.link.Disk.Manager[self.package].addEntry(device, path, fsType, fs_options)
+    # Sync and wait for Sync to complete
+    os.system(PATH_SYNC)
+    sleep(2)
 
-    def getDeviceByLabel(self, label):
-        return unicode(self.link.Disk.Manager[self.package].getDeviceByLabel(label))
+    # Call required ioctl to re-read partition table
+    try:
+        ioctl(fd, BLKRRPART())
+    except EnvironmentError, (error, message):
+        # Attempt ioctl call twice in case an older kernel (1.2.x) is being used
+        os.system(PATH_SYNC)
+        sleep(2)
 
-    def mount(self, device, path):
-        print "mount"
-        self.link.Disk.Manager[self.package].mount(device, path)
+        try:
+            ioctl(fd, BLKRRPART())
+        except EnvironmentError, (error, strerror):
+            print 'IOCTL Error: %s for device %s.'%(strerror, device)
+            sys.exit(-1)
 
-    def umount(self, device):
-        print "unmount"
-        self.link.Disk.Manager[self.package].umount(device)
+    print 'Successfully re-read partition table on device %s.'%(device)
+    # Sync file buffers
+    os.fsync(fd)
+    os.close(fd)
 
-    def refreshPartitionTable(self, device):
-        self.link.Disk.Manager[self.package].refreshPartitionTable(device)
+    # Final sync
+    print "Syncing %s ...  " % (device),
+    os.system(PATH_SYNC)
+    sleep(4) # for sync()
+    print "Done."
+
+
+def getMounted():
+    parts = []
+    for line in open('/proc/mounts'):
+        if line.startswith('/dev/'):
+            device, path, other = line.split(" ", 2)
+            parts.append((device, path, ))
+    return parts
+
+
+def umount(device):
+    for dev, path in getMounted():
+        if dev == device and path == "/":
+            fail(_(FAIL_ROOT) % device)
+    runCommand(['/bin/umount', device])
+
+
