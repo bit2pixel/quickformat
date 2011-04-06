@@ -231,11 +231,14 @@ class QuickFormat(QtGui.QWidget):
         disk = volumeItem.disk.text()
         fileSystem = str(volumeItem.format.text()).strip("()")
 
-        # find fileSystem index from list
-        fsIndex = self.ui.fileSystem.findText(self.find_key(fileSystems, fileSystem))
+        try:
+            # find fileSystem index from list
+            fsIndex = self.ui.fileSystem.findText(self.find_key(fileSystems, fileSystem))
 
-        # select fileSystem type
-        self.ui.fileSystem.setCurrentIndex(fsIndex)
+            # select fileSystem type
+            self.ui.fileSystem.setCurrentIndex(fsIndex)
+        except:
+            print "File system not found"
 
         self.ui.volumeLabel.setText(label)
         self.ui.icon.setPixmap(icon)
@@ -262,13 +265,16 @@ class QuickFormat(QtGui.QWidget):
             return True
 
     def filter_file_system(self, volume):
-        fileSystem = self.get_volume_file_system(volume)
+        #fileSystem = self.get_volume_file_system(volume)
 
+        """
         if self.check_device(volume)\
             and (str(fileSystem).startswith("ntfs") \
                 or str(fileSystem).startswith("vfat") \
+                or str(fileSystem).startswith("iso9660") \
                 or str(fileSystem).startswith("ext")):
-
+        """
+        if self.check_device(volume):
             return True
 
     def get_volumes(self):
