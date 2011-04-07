@@ -249,13 +249,6 @@ class QuickFormat(QtGui.QWidget):
         self.volume_to_format_disk = disk
 
 
-    def get_device_bus(self, volume):
-        """ returns the bus of the device """
-        try:
-            return volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).bus()
-        except:
-            pass
-
     def check_bus(self, volume):
         """ controls if the device is appropriate for formatting """
         accepted_busses = [Solid.StorageDrive.Usb,
@@ -264,8 +257,35 @@ class QuickFormat(QtGui.QWidget):
         if self.get_device_bus(volume) in accepted_busses:
             return True
 
+
+    def check_drivetype(self, volume):
+        accepted_types = [Solid.StorageDrive.HardDisk,
+                          Solid.StorageDrive.Floppy,
+                          Solid.StorageDrive.CompactFlash,
+                          Solid.StorageDrive.MemoryStick,
+                          Solid.StorageDrive.SmartMedia,
+                          Solid.StorageDrive.SdMmc,
+                          Solid.StorageDrive.Xd]
+        if self.get_device_type(volume) in accepted_types:
+            return True
+
+    def get_device_type(self, volume):
+        """ returns the bus of the device """
+        try:
+            return volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).driveType()
+        except:
+            pass
+
+    def get_device_bus(self, volume):
+        """ returns the bus of the device """
+        try:
+            return volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).bus()
+        except:
+            pass
+
+
     def filter_file_system(self, volume):
-        if self.check_bus(volume):
+        if self.check_bus(volume) and self.check_drivetype(volume):
             return True
 
     def get_volumes(self):
