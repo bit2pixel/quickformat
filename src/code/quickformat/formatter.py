@@ -70,6 +70,7 @@ class Formatter(QThread):
             self.flag = self.fs
 
         # Change Device Flags With Parted Module
+        print "---------------"
         print "DISK %s" % self.disk
 
         parted_device = parted.Device(self.disk)
@@ -80,6 +81,7 @@ class Formatter(QThread):
 
         print "---------------"
         print self.volumeToFormat
+        print "---------------"
 
 
         parted_partition.fileSystem = parted.fileSystemType[self.flag]
@@ -101,13 +103,18 @@ class Formatter(QThread):
 
         # Command to execute
         command = "mkfs -t " + self.fs + self.quickOption + " " + self.labelingCommand + " '" + self.volumeLabel + "' " + self.volumeToFormat
+        print "---------------"
         print command
+        print "---------------"
 
         # Execute
         proc = Popen(command, shell = True, stdout = PIPE,)
 
         # If theres an error then emmit error signal
         output = proc.communicate()[0]
+        print "---------------"
+        print output
+        print "---------------"
 
         ### TODO:
         ### if output contains these words emmit signal

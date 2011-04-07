@@ -91,7 +91,7 @@ class Notifier(PAbstractBox):
         self.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
         self.okButton.hide()
 
-    def setMessage(self, message, button, indicator, icon=False):
+    def setMessage(self, message, button, indicator, icon=False, wait=False):
         self.adjustSize()
         self.label.adjustSize()
 
