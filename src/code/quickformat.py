@@ -43,7 +43,6 @@ class VolumeItem(Ui_VolumeItem, QtGui.QWidget):
         self.path.setText(path)
         self.disk.setText(disk)
         size = size / 1024.0 ** 2
-        print size
         if size >= 1000 and size < 100000:
             size = str("%.2f" % (size / 1024.0)) + " GB"
         elif size > 100000:
@@ -65,6 +64,7 @@ class QuickFormat(QtGui.QWidget):
         self.ui = Ui_QuickFormat()
         self.ui.setupUi(self)
 
+        self.first_run = True
         self.initial_selection = 0
 
         self.__process_args__()
@@ -73,7 +73,6 @@ class QuickFormat(QtGui.QWidget):
         self.__set_custom_widgets__()
 
         self.__init_messagebox__()
-
 
         self.generate_volume_list()
         self.generate_file_system_list()
@@ -149,9 +148,14 @@ class QuickFormat(QtGui.QWidget):
         self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
 
     def no_disk_notification(self):
-        msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
-        msgBox.exec_()
-        sys.exit()
+        if self.first_run:
+            msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
+            msgBox.exec_()
+            sys.exit()
+        else:
+            self.formatting = False
+            self.pds_messagebox.setMessage(i18n("There aren't any removable devices."), button=False, indicator=False, icon=True)
+            self.pds_messagebox.animate(start=MIDCENTER, stop=MIDCENTER)
 
     def find_key(self, dic, val):
         """return the key of dictionary dic given the value"""
@@ -168,12 +172,13 @@ class QuickFormat(QtGui.QWidget):
 
         if not volumes:
             self.no_disk_notification()
+        else:
+            for volume in volumes:
+                self.add_volume_to_list(volume)
 
-        for volume in volumes:
-            self.add_volume_to_list(volume)
-
-        # select the appropriate volume from list
-        self.ui.volumeName.setCurrentIndex(selectedIndex)
+            # select the appropriate volume from list
+            self.ui.volumeName.setCurrentIndex(selectedIndex)
+        self.first_run = False
 
     def notify_refreshing_disk_list(self):
         if not self.refreshing_disks and not self.formatting:
