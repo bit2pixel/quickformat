@@ -256,7 +256,7 @@ class QuickFormat(QtGui.QWidget):
         except:
             pass
 
-    def check_device(self, volume):
+    def check_bus(self, volume):
         """ controls if the device is appropriate for formatting """
         accepted_busses = [Solid.StorageDrive.Usb,
                            Solid.StorageDrive.Ieee1394, # Firewire
@@ -265,16 +265,7 @@ class QuickFormat(QtGui.QWidget):
             return True
 
     def filter_file_system(self, volume):
-        #fileSystem = self.get_volume_file_system(volume)
-
-        """
-        if self.check_device(volume)\
-            and (str(fileSystem).startswith("ntfs") \
-                or str(fileSystem).startswith("vfat") \
-                or str(fileSystem).startswith("iso9660") \
-                or str(fileSystem).startswith("ext")):
-        """
-        if self.check_device(volume):
+        if self.check_bus(volume):
             return True
 
     def get_volumes(self):
