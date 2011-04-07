@@ -35,7 +35,7 @@ class Formatter(QThread):
             self.emit(SIGNAL("format_successful()"))
 
     def is_device_mounted(self, volumePath):
-        for mountPoint in mountList():
+        for mountPoint in getMounted():
             if self.volumeToFormat == mountPoint[0]:
                 return True
 
