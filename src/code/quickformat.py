@@ -261,6 +261,7 @@ class QuickFormat(QtGui.QWidget):
                            Solid.StorageDrive.Platform] # Card Readers
         if self.get_device_bus(volume) in accepted_busses:
             return True
+        return True
 
 
     def check_drivetype(self, volume):
@@ -273,6 +274,7 @@ class QuickFormat(QtGui.QWidget):
                           Solid.StorageDrive.Xd]
         if self.get_device_type(volume) in accepted_types:
             return True
+        return True
 
     def get_device_type(self, volume):
         """ returns the bus of the device """
@@ -324,7 +326,10 @@ class QuickFormat(QtGui.QWidget):
         return volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).size()
 
     def get_disk_path(self, volume):
-        return volume.parent().asDeviceInterface(Solid.Block.Block).device()
+        try:
+            return volume.parent().asDeviceInterface(Solid.Block.Block).device()
+        except:
+            return self.get_volume_path(volume)
 
     def prepare_selection_text(self, diskName, volumePath, volumeName):
         if volumeName != "":
@@ -360,6 +365,13 @@ class QuickFormat(QtGui.QWidget):
         print volumeInfo["volume_path"] == self.volumePathArg
         if volumeInfo["volume_path"] == self.volumePathArg:
             self.initial_selection = self.ui.listWidget.count() - 1
+
+
+    for v in Solid.Device.listFromType(Solid.StorageVolume.StorageVolume):
+        try:
+            str(v.asDeviceInterface(Solid.Block.Block).device()), str(v.product()), str(v.vendor()), v.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).driveType(), v.asDeviceInterface(Solid.StorageVolume.StorageVolume).fsType()
+        except:
+            pass
 
 if __name__ == "__main__":
     args = []

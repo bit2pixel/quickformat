@@ -73,32 +73,34 @@ class Formatter(QThread):
         print "---------------"
         print "DISK %s" % self.disk
 
-        parted_device = parted.Device(self.disk)
-        #parted_device = parted.Device("/dev/sdh")
-        parted_disk = parted.Disk(parted_device)
+        try:
+            parted_device = parted.Device(self.disk)
+            #parted_device = parted.Device("/dev/sdh")
+            parted_disk = parted.Disk(parted_device)
 
-        parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
+            parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
 
-        print "---------------"
-        print self.volumeToFormat
-        print "---------------"
+            print "---------------"
+            print self.volumeToFormat
+            print "---------------"
 
 
-        parted_partition.fileSystem = parted.fileSystemType[self.flag]
+            parted_partition.fileSystem = parted.fileSystemType[self.flag]
 
-        # Get possible flags
-        parted_flags = parted.partitionFlag.values()
+            # Get possible flags
+            parted_flags = parted.partitionFlag.values()
 
-        # Remove any Flags
-        flags_found = parted_partition.getFlagsAsString().split(", ")
+            # Remove any Flags
+            flags_found = parted_partition.getFlagsAsString().split(", ")
 
-        if len(flags_found) == 0:
-            for flag in flags_found:
-                parted_partition.unsetFlag(parted_flags.index(flag) + 1)
+            if len(flags_found) == 0:
+                for flag in flags_found:
+                    parted_partition.unsetFlag(parted_flags.index(flag) + 1)
 
-        # Commit Changes
-        parted_disk.commit()
-
+            # Commit Changes
+            parted_disk.commit()
+        except:
+            print "NO FLAG WRITTEN"
         # udev trigger
 
         # Command to execute

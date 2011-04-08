@@ -6,10 +6,9 @@ from PyQt4.QtCore import QSize, SIGNAL, QThread
 
 from PyKDE4.kdecore import i18n
 
-from pds.gui import PAbstractBox
-from pds.gui import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
-
-from pds.qprogressindicator import QProgressIndicator
+from notifier_backend import PAbstractBox
+from notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
+from notifier_backend import QProgressIndicator
 
 class Notifier(PAbstractBox):
 
@@ -125,6 +124,3 @@ class Notifier(PAbstractBox):
             self.icon.setPixmap(icon.pixmap(22, 22))
             self.icon.show()
         self.adjustSize()
-
-
-
