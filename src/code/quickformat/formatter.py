@@ -8,80 +8,90 @@ from subprocess import Popen, PIPE, STDOUT, call
 
 import parted
 
-
-
 class Formatter(QThread):
-    def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label, volume_to_format_disk):
+    #def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label, volume_to_format_disk):
+    def __init__(self):
         QThread.__init__(self)
 
-        self.volumeToFormat = str(volume_to_format_path)
-        self.fs = str(volume_to_format_type)
-        self.volumeLabel = str(volume_to_format_label)
-        self.disk = str(volume_to_format_disk)
+        # Volume to format
+        self.volume = None
+
+        # Formatting status
+        self.formatting = False
 
     def run(self):
+        # Send signal for notification
+        self.formatting = True
         self.emit(SIGNAL("format_started()"))
 
         self.formatted = self.format_disk()
 
         try:
-            refreshPartitionTable(self.volumeToFormat[:8])
+            #refreshPartitionTable(volume.path[:8])
+            refreshPartitionTable(self.volume.device_path)
         except:
             print "ERROR: Cannot refresh partition"
 
-        if self.formatted==False:
+        self.formatting = False
+
+        if self.formatted == False:
             self.emit(SIGNAL("format_failed()"))
         else:
             self.emit(SIGNAL("format_successful()"))
 
-    def is_device_mounted(self, volumePath):
+    def set_volume_to_format(self, volume):
+        self.volume = volume
+        print self.volume
+
+    def is_device_mounted(self):
         for mountPoint in getMounted():
-            if self.volumeToFormat == mountPoint[0]:
+            if self.volume.path == mountPoint[0]:
                 return True
 
     def format_disk(self):
         # If device is mounted then unmount
 
-        if self.is_device_mounted(self.volumeToFormat) == True:
+        if self.is_device_mounted() == True:
             try:
-                umount(str(self.volumeToFormat))
+                umount(str(self.volume.path))
             except:
                 return False
 
         # If NTFS is selected then activate quick formating option
-        if self.fs == "ntfs-3g":
-            self.fs = "ntfs"
+        if self.volume.file_system == "ntfs-3g":
+            self.volume.file_system = "ntfs"
             self.quickOption = " -Q "
         else:
             self.quickOption = ""
 
         # If volume label empty
-        if self.volumeLabel == "":
-            self.volumeLabel = "My Disk"
+        if self.volume.name == "":
+            self.volume.name = "My Disk"
 
         self.flag = ""
 
         # If VFAT then labeling parameter changes
-        if self.fs == "vfat":
+        if self.volume.file_system == "vfat":
             self.labelingCommand = "-n"
             self.flag = "fat32"
         else:
             self.labelingCommand = "-L"
-            self.flag = self.fs
+            self.flag = self.volume.file_system
 
         # Change Device Flags With Parted Module
         print "---------------"
-        print "DISK %s" % self.disk
+        print "DISK %s" % self.volume.device_path
 
         try:
-            parted_device = parted.Device(self.disk)
+            print "TRYING TO REMOVE FLAGS"
+            parted_device = parted.Device(self.volume.device_path)
             #parted_device = parted.Device("/dev/sdh")
             parted_disk = parted.Disk(parted_device)
 
-            parted_partition = parted_disk.getPartitionByPath(self.volumeToFormat)
+            parted_partition = parted_disk.getPartitionByPath(self.volume.path)
 
             print "---------------"
-            print self.volumeToFormat
+            print self.volume.path
             print "---------------"
 
 
@@ -104,7 +114,7 @@ class Formatter(QThread):
         # udev trigger
 
         # Command to execute
-        command = "mkfs -t " + self.fs + self.quickOption + " " + self.labelingCommand + " '" + self.volumeLabel + "' " + self.volumeToFormat
+        command = "mkfs -t " + self.volume.file_system + self.quickOption + " " + self.labelingCommand + " '" + self.volume.name + "' " + self.volume.path
         print "---------------"
         print command
         print "---------------"
