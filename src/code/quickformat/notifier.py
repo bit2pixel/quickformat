@@ -10,6 +10,8 @@ from notifier_backend import PAbstractBox
 from notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 from notifier_backend import QProgressIndicator
 
+FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES, NO_DEVICE = range(0,5)
+
 class Notifier(PAbstractBox):
 
     def __init__(self, parent):
@@ -86,11 +88,12 @@ class Notifier(PAbstractBox):
 
         self.okButton.clicked.connect(self.hideBox)
 
+
     def hideBox(self):
         self.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
         self.okButton.hide()
 
-    def setMessage(self, message, button, indicator, icon=False, wait=False):
+    def set_message(self, message, button=False, indicator=False, icon=False, wait=False):
         self.adjustSize()
         self.label.adjustSize()
 
@@ -124,3 +127,19 @@ class Notifier(PAbstractBox):
             self.icon.setPixmap(icon.pixmap(22, 22))
             self.icon.show()
         self.adjustSize()
+
+    def notify(self, state):
+        if state == FORMAT_STARTED:
+            self.set_message(i18n("Please wait while formatting..."), indicator=True)
+        elif state == FORMAT_SUCCESSFUL:
+            self.set_message(i18n("Format completed successfully."), button=True, icon=True)
+        elif state == FORMAT_FAILED:
+            self.set_message(i18n("Device is in use. Please try again."), button=True, indicator=True)
+        elif state == NO_DEVICE:
+            self.set_message(i18n("There aren't any removable devices."), button=False, indicator=False, icon=True)
+        elif state == LOADING_DEVICES:
+            self.set_message(i18n("Loading devices..."), button=False, indicator=True)
+
+        self.animate(start=MIDCENTER, stop=MIDCENTER)
+
+
