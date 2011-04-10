@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-06 01:26+0300\n"
+"POT-Creation-Date: 2011-04-10 07:13+0300\n"
 "PO-Revision-Date: 2011-01-25 04:25+0300\n"
 "Last-Translator: Korostil Daniel <ted.korostiled@gmail.com>\n"
 "Language-Team: translation@linux.org.ua\n"
@@ -18,7 +18,7 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: .tmp/ui_quickformat.py:209 .tmp/quickformat/about.py:17 .tmp/about.py:17
+#: .tmp/ui_quickformat.py:209 .tmp/quickformat/about.py:27 .tmp/about.py:27
 msgid "Quick Format"
 msgstr "Швидке форматування"
 
@@ -42,48 +42,51 @@ msgstr "Форматування"
 msgid "Close"
 msgstr "Закрити"
 
-#: .tmp/notifier.py:75 .tmp/quickformat/notifier.py:75
+#: .tmp/notifier.py:100 .tmp/quickformat/notifier.py:100
 msgid "OK"
 msgstr ""
 
-#: .tmp/quickformat.py:137
+#: .tmp/notifier.py:157 .tmp/quickformat/notifier.py:157
 msgid "Please wait while formatting..."
 msgstr "Зачекайте, будь ласка, форматування…"
 
-#: .tmp/quickformat.py:142
+#: .tmp/notifier.py:159 .tmp/quickformat/notifier.py:159
 msgid "Format completed successfully."
 msgstr "Форматування завершено успішно."
 
-#: .tmp/quickformat.py:148
-#, fuzzy
-msgid "Device is in use. Please try again."
-msgstr "Пристрій використовується. Будь ласка, спробуйте ще раз"
+#: .tmp/notifier.py:161 .tmp/quickformat/notifier.py:161
+msgid ""
+"Cannot format this partition.\n"
+"The device might be in use.\n"
+"Please try again."
+msgstr ""
 
-#: .tmp/quickformat.py:152
-msgid "QuickFormat"
-msgstr "QuickFormat"
-
-#: .tmp/quickformat.py:152
+#: .tmp/notifier.py:163 .tmp/quickformat.py:307
+#: .tmp/quickformat/notifier.py:163
 msgid "There aren't any removable devices."
 msgstr "Нема жодного змінного пристрою."
 
-#: .tmp/quickformat.py:181
-msgid "Loading disks..."
+#: .tmp/notifier.py:165 .tmp/quickformat/notifier.py:165
+msgid "Loading devices..."
 msgstr ""
 
-#: .tmp/quickformat/about.py:19 .tmp/about.py:19
+#: .tmp/quickformat.py:307
+msgid "QuickFormat"
+msgstr "QuickFormat"
+
+#: .tmp/quickformat/about.py:29 .tmp/about.py:29
 msgid "Removable Device Formatting Tool"
 msgstr "Інтрумент форматування змінних пристроїв "
 
-#: .tmp/quickformat/about.py:21 .tmp/about.py:21
+#: .tmp/quickformat/about.py:31 .tmp/about.py:31
 msgid "(c) 2011 TUBITAK/UEKAE"
 msgstr "© 2011 TUBITAK/UEKAE"
 
-#: .tmp/quickformat/about.py:29 .tmp/about.py:29
+#: .tmp/quickformat/about.py:39 .tmp/about.py:39
 msgid "Renan Cakirerk"
 msgstr "Renan Cakirerk"
 
-#: .tmp/quickformat/about.py:29 .tmp/about.py:29
+#: .tmp/quickformat/about.py:39 .tmp/about.py:39
 msgid "Current Maintainer"
 msgstr "Теперішній супровідник"
 
@@ -94,6 +97,10 @@ msgstr ""
 #: .tmp/ui_volumeitem.py:144
 msgid "-"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Device is in use. Please try again."
+#~ msgstr "Пристрій використовується. Будь ласка, спробуйте ще раз"
 
 #~ msgid "Cancel"
 #~ msgstr "Скасувати"
