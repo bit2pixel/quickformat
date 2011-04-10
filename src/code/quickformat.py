@@ -25,8 +25,6 @@ import sys, os
 
 import dbus
 
-VOLUME_LIST = {'':''}
-
 FILE_SYSTEMS = {"Ext4":"ext4",
                 "Ext3":"ext3",
                 "Ext2":"ext2",
@@ -64,7 +62,6 @@ class Volume():
     def has_accepted_bus(self):
         """ controls if the device is appropriate for formatting """
         if self.device_bus in ACCEPTED_BUSSES:
-            print "BUS = %s" % self.device_bus
             return True
 
     def has_accepted_drivetype(self):
@@ -79,25 +76,25 @@ class Volume():
         try:
             return self.volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).driveType()
         except:
-            print "ERROR: get_device_type (no parent?) -> %s" % self.path
+            print "WARNING: get_device_type (no parent?) -> %s" % self.path
 
     def get_device_bus(self):
         """ returns the bus of the device """
         try:
             return self.volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).bus()
         except:
-            print "ERROR: get_device_bus (no parent?) -> %s" % self.path
+            print "WARNING: get_device_bus (no parent?) -> %s" % self.path
 
     def get_device_path(self):
         try:
-            return self.volume.parent().asDeviceInterface(Solid.Block.Block).device()
+            return str(self.volume.parent().asDeviceInterface(Solid.Block.Block).device())
         except:
-            print "ERROR: get_device_path (no parent?) -> %s" % self.path
+            print "WARNING: get_device_path (no parent?) -> %s" % self.path
             return self.path
 
     def get_device_name(self):
         """ returns the device name that the volume resides on """
-        return "%s %s" % (self.volume.parent().vendor(), self.volume.parent().product())
+        return str("%s %s" % (self.volume.parent().vendor(), self.volume.parent().product()))
 
 
     # Get Volume Information
@@ -108,13 +105,13 @@ class Volume():
         return QtGui.QPixmap(iconPath)
 
     def get_volume_name(self):
-        return self.volume.product()
+        return str(self.volume.product())
 
     def get_volume_path(self):
-        return self.volume.asDeviceInterface(Solid.Block.Block).device()
+        return str(self.volume.asDeviceInterface(Solid.Block.Block).device())
 
     def get_volume_file_system(self):
-        return self.volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).fsType()
+        return str(self.volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).fsType())
 
     def get_volume_size(self):
         return self.volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).size()
@@ -246,10 +243,9 @@ class QuickFormat(QtGui.QWidget):
     def show_volume_list(self):
         self.ui.listWidget.clear()
         self.ui.volumeName.hidePopup()
+
         selectedIndex = 0
         currentIndex = 0
-
-        VOLUME_LIST.clear()
 
         volumes = self.get_volumes()
 
@@ -261,12 +257,22 @@ class QuickFormat(QtGui.QWidget):
 
             # select the appropriate volume from list
             self.ui.volumeName.setCurrentIndex(selectedIndex)
+
+            # Auto-hide notifier
+            if not self.formatter.formatting and not self.first_run and self.notifier.okButton.isHidden():
+                QtCore.QTimer.singleShot(2000, self.hide_notifier)
+
+            self.set_info()
+
         self.first_run = False
+
 
 
     def format_device(self):
         """ Starts the formatting operation """
-        self.formatter.set_volume_to_format(self.volume_to_format)
+        selected_file_system = FILE_SYSTEMS[str(self.ui.fileSystem.currentText())]
+        selected_label = self.ui.volumeLabel.text()
+        self.formatter.set_volume_to_format(self.volume_to_format, selected_file_system, selected_label)
         self.formatter.start()
 
     def slot_format_started(self):
@@ -289,28 +295,23 @@ class QuickFormat(QtGui.QWidget):
 
     def notify_refreshing_device_list(self):
         if not self.refreshing_devices and not self.formatter.formatting:
-            self.refreshing_devices == True
+            self.refreshing_devices = True
             self.notifier.notify(LOADING_DEVICES)
-
-
 
 
     def refresh_volume_list(self, notify=True):
         if notify:
             self.notify_refreshing_device_list()
-            if not self.formatter.formatting:
-                QtCore.QTimer.singleShot(2000, self.hide_pds_messagebox)
 
         self.show_volume_list()
         self.refreshing_devices = False
 
     def slot_refresh_volume_list(self, device):
-        print device
         #FIX doesnt work if hal is used in system
         if str(device).find("UDisks")>=0:
             self.refresh_volume_list()
 
-    def hide_pds_messagebox(self):
+    def hide_notifier(self):
         self.notifier.animate(start=MIDCENTER, stop=MIDCENTER, direction=OUT)
 
     def generate_file_system_list(self):
@@ -351,6 +352,7 @@ class QuickFormat(QtGui.QWidget):
             # select fileSystem type
             self.ui.fileSystem.setCurrentIndex(fsIndex)
         except:
+            self.ui.fileSystem.setCurrentIndex(0)
             print "Cannot match file system. Selecting Ext2 as default."
 
         self.ui.volumeLabel.setText(volume.name)
