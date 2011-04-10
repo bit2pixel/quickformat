@@ -21,9 +21,9 @@
 Dependencies:
     parted
     udisks
-    kde
-    python
-    qt
+    kde 4.6.1
+    python 2.7
+    qt 4.7.1
 
 Installation:
     sudo python setup.py install
