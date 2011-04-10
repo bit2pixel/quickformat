@@ -9,12 +9,17 @@ from subprocess import Popen, PIPE, STDOUT, call
 import parted
 
 class Formatter(QThread):
-    #def __init__(self, volume_to_format_path, volume_to_format_type, volume_to_format_label, volume_to_format_disk):
     def __init__(self):
         QThread.__init__(self)
 
         # Volume to format
         self.volume = None
+
+        # Volumes current or new file system
+        self.new_file_system = None
+
+        # Volumes current or new file system
+        self.new_label = None
 
         # Formatting status
         self.formatting = False
@@ -26,75 +31,38 @@ class Formatter(QThread):
 
         self.formatted = self.format_disk()
 
-        try:
-            #refreshPartitionTable(volume.path[:8])
-            refreshPartitionTable(self.volume.device_path)
-        except:
-            print "ERROR: Cannot refresh partition"
+        if self.formatted == True:
+            try:
+                refreshPartitionTable(self.volume.device_path)
+            except:
+                print "ERROR: Cannot refresh partition table"
+
+            self.emit(SIGNAL("format_successful()"))
+        else:
+            self.emit(SIGNAL("format_failed()"))
 
         self.formatting = False
 
-        if self.formatted == False:
-            self.emit(SIGNAL("format_failed()"))
-        else:
-            self.emit(SIGNAL("format_successful()"))
 
-    def set_volume_to_format(self, volume):
+    def set_volume_to_format(self, volume, file_system, label):
         self.volume = volume
-        print self.volume
+        self.new_file_system = file_system
+        self.new_label = label
 
     def is_device_mounted(self):
         for mountPoint in getMounted():
             if self.volume.path == mountPoint[0]:
                 return True
 
-    def format_disk(self):
-        # If device is mounted then unmount
-
-        if self.is_device_mounted() == True:
-            try:
-                umount(str(self.volume.path))
-            except:
-                return False
-
-        # If NTFS is selected then activate quick formating option
-        if self.volume.file_system == "ntfs-3g":
-            self.volume.file_system = "ntfs"
-            self.quickOption = " -Q "
-        else:
-            self.quickOption = ""
-
-        # If volume label empty
-        if self.volume.name == "":
-            self.volume.name = "My Disk"
-
-        self.flag = ""
-
-        # If VFAT then labeling parameter changes
-        if self.volume.file_system == "vfat":
-            self.labelingCommand = "-n"
-            self.flag = "fat32"
-        else:
-            self.labelingCommand = "-L"
-            self.flag = self.volume.file_system
-
-        # Change Device Flags With Parted Module
-        print "---------------"
-        print "DISK %s" % self.volume.device_path
-
+    def _remove_volume_flags(self):
         try:
-            print "TRYING TO REMOVE FLAGS"
+            print "---------------"
+            print "TRYING TO REMOVE FLAGS of %s" % self.volume.device_path
+
             parted_device = parted.Device(self.volume.device_path)
-            #parted_device = parted.Device("/dev/sdh")
             parted_disk = parted.Disk(parted_device)
 
             parted_partition = parted_disk.getPartitionByPath(self.volume.path)
-
-            print "---------------"
-            print self.volume.path
-            print "---------------"
-
-
             parted_partition.fileSystem = parted.fileSystemType[self.flag]
 
             # Get possible flags
@@ -109,14 +77,45 @@ class Formatter(QThread):
 
             # Commit Changes
             parted_disk.commit()
-        except:
-            print "NO FLAG WRITTEN"
-        # udev trigger
+        except Exception as e:
+            print "FAILED TO REMOVE FLAGS \n", e.message
+
+    def format_disk(self):
+        # If device is mounted then unmount
+
+        if self.is_device_mounted() == True:
+            try:
+                umount(str(self.volume.path))
+            except:
+                return False
+
+        # If NTFS is selected then activate quick formating option
+        if self.new_file_system == "ntfs-3g":
+            self.new_file_system = "ntfs"
+            self.quickOption = "-Q"
+        else:
+            self.quickOption = ""
+
+        # If volume label empty
+        if self.new_label == "":
+            self.new_label = "My Disk"
+
+        self.flag = ""
+
+        # If VFAT then labeling parameter changes
+        if self.new_file_system == "vfat":
+            self.labelingCommand = "-n"
+            self.flag = "fat32"
+        else:
+            self.labelingCommand = "-L"
+            self.flag = self.new_file_system
+
+        # udev trigger here??
 
         # Command to execute
-        command = "mkfs -t " + self.volume.file_system + self.quickOption + " " + self.labelingCommand + " '" + self.volume.name + "' " + self.volume.path
+        command = "mkfs -t %s %s %s '%s' %s -v" % (self.new_file_system, self.quickOption, self.labelingCommand, self.new_label, self.volume.path)
         print "---------------"
-        print command
+        print "COMMAND: %s" % command
         print "---------------"
 
         # Execute
@@ -125,11 +124,17 @@ class Formatter(QThread):
         # If theres an error then emmit error signal
         output = proc.communicate()[0]
         print "---------------"
-        print output
+        print "OUTPUT: %s" % output
+        print "RETURN: %s" % proc.returncode
         print "---------------"
 
         ### TODO:
         ### if output contains these words emmit signal
         ### errorWords = ["error", "Error", "cannot", "Cannot"] ...
 
+        # If format succeeded, remove parition flags
+        if proc.returncode == 0:
+            # Change Device Flags With Parted Module
+            self._remove_volume_flags()
 
+            return True
