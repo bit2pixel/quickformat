@@ -36,8 +36,7 @@ from quickformat.notifier import NO_DEVICE, FORMAT_STARTED, FORMAT_SUCCESSFUL, F
 from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
-from pds.thread import PThread
-from pds.gui import OUT, MIDCENTER, MIDCENTER, CURRENT, OUT
+from quickformat.notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 
 import sys, os
 
