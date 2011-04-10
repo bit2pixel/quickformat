@@ -11,6 +11,8 @@ from notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 from notifier_backend import QProgressIndicator
 
 FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES, NO_DEVICE = range(0,5)
+ICON_ERROR = ":/images/images/dialog-error.png"
+ICON_SUCCESS = ":/images/images/dialog-ok-apply.png" 
 
 class Notifier(PAbstractBox):
 
@@ -39,7 +41,7 @@ class Notifier(PAbstractBox):
         self.icon.setMinimumSize(QtCore.QSize(32, 32))
         self.icon.setMaximumSize(QtCore.QSize(32, 32))
         self.icon.setText("")
-        self.icon.setPixmap(QtGui.QPixmap(":/images/images/dialog-ok-apply.png"))
+        self.icon.setPixmap(QtGui.QPixmap(ICON_SUCCESS))
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         self.icon.setObjectName("icon")
         self.horizontalLayout_2.addWidget(self.icon)
@@ -50,13 +52,17 @@ class Notifier(PAbstractBox):
         self.horizontalLayout_2.addWidget(self.busy)
 
         self.label = QtGui.QLabel(self)
+        self.label.setText("                                 ")
         self.label.setMinimumHeight(30)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        # Word wrap
         self.label.setWordWrap(False)
+
         self.label.setIndent(0)
 
         self.label.setObjectName("label")
@@ -93,9 +99,8 @@ class Notifier(PAbstractBox):
         self.animate(start=MIDCENTER, stop=TOPCENTER, direction=OUT)
         self.okButton.hide()
 
-    def set_message(self, message, button=False, indicator=False, icon=False, wait=False):
-        self.adjustSize()
-        self.label.adjustSize()
+    def set_message(self, message, button=False, indicator=False, icon=None):
+        self.icon.setPixmap(QtGui.QPixmap(icon))
 
         if message == '':
             self.label.hide()
@@ -116,8 +121,9 @@ class Notifier(PAbstractBox):
                 self.busy.hide()
 
             self.label.setText(message)
-            self.label.setAlignment(QtCore.Qt.AlignVCenter)
-            self.label.adjustSize()
+            self.label.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.label.adjustSize()
         self.adjustSize()
 
     def setIcon(self, icon=None):
@@ -132,13 +138,13 @@ class Notifier(PAbstractBox):
         if state == FORMAT_STARTED:
             self.set_message(i18n("Please wait while formatting..."), indicator=True)
         elif state == FORMAT_SUCCESSFUL:
-            self.set_message(i18n("Format completed successfully."), button=True, icon=True)
+            self.set_message(i18n("Format completed successfully."), button=True, icon=ICON_SUCCESS)
         elif state == FORMAT_FAILED:
-            self.set_message(i18n("Device is in use. Please try again."), button=True, indicator=True)
+            self.set_message(i18n("Cannot format this partition.\nThe device might be in use.\nPlease try again."), button=True, icon=ICON_ERROR)
         elif state == NO_DEVICE:
-            self.set_message(i18n("There aren't any removable devices."), button=False, indicator=False, icon=True)
+            self.set_message(i18n("There aren't any removable devices."), icon=ICON_ERROR)
         elif state == LOADING_DEVICES:
-            self.set_message(i18n("Loading devices..."), button=False, indicator=True)
+            self.set_message(i18n("Loading devices..."), indicator=True)
 
         self.animate(start=MIDCENTER, stop=MIDCENTER)
 
