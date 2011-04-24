@@ -41,7 +41,6 @@ msgid "Close"
 msgstr "Chiudi"
 
 #: .tmp/notifier.py:100 .tmp/quickformat/notifier.py:100
-#, fuzzy
 msgid "OK"
 msgstr "OK"
 
@@ -54,7 +53,6 @@ msgid "Format completed successfully."
 msgstr "Formato completato con successo."
 
 #: .tmp/notifier.py:161 .tmp/quickformat/notifier.py:161
-#, fuzzy
 msgid ""
 "Cannot format this partition.\n"
 "The device might be in use.\n"
@@ -70,7 +68,6 @@ msgid "There aren't any removable devices."
 msgstr "Non ci sono dispositivi rimovibili."
 
 #: .tmp/notifier.py:165 .tmp/quickformat/notifier.py:165
-#, fuzzy
 msgid "Loading devices..."
 msgstr "Caricamento del dispositivo..."
 
@@ -95,12 +92,10 @@ msgid "Current Maintainer"
 msgstr "Sviluppatore attuale"
 
 #: .tmp/ui_volumeitem.py:143
-#, fuzzy
 msgid ":"
 msgstr ":"
 
 #: .tmp/ui_volumeitem.py:144
-#, fuzzy
 msgid "-"
 msgstr "-"
 
