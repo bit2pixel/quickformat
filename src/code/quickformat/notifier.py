@@ -28,7 +28,7 @@ from notifier_backend import PAbstractBox
 from notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
 from notifier_backend import QProgressIndicator
 
-FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES, NO_DEVICE = range(0,5)
+FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES, NO_DEVICE, PARTITION_TABLE_ERROR = range(0,6)
 ICON_ERROR = ":/images/images/dialog-error.png"
 ICON_SUCCESS = ":/images/images/dialog-ok-apply.png" 
 
@@ -155,14 +155,22 @@ class Notifier(PAbstractBox):
     def notify(self, state):
         if state == FORMAT_STARTED:
             self.set_message(i18n("Please wait while formatting..."), indicator=True)
+
         elif state == FORMAT_SUCCESSFUL:
             self.set_message(i18n("Format completed successfully."), button=True, icon=ICON_SUCCESS)
+
         elif state == FORMAT_FAILED:
             self.set_message(i18n("Cannot format this partition.\nThe device might be in use.\nPlease try again."), button=True, icon=ICON_ERROR)
+
         elif state == NO_DEVICE:
             self.set_message(i18n("There aren't any removable devices."), icon=ICON_ERROR)
+
         elif state == LOADING_DEVICES:
             self.set_message(i18n("Loading devices..."), indicator=True)
+
+        elif state == PARTITION_TABLE_ERROR:
+            self.set_message(i18n("The partition table seems to have errors.\nPlease re-partition this device and try again."), button=True, icon=ICON_ERROR)
+
 
         self.animate(start=MIDCENTER, stop=MIDCENTER)
 
