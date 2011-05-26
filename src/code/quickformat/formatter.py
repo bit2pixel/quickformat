@@ -42,6 +42,9 @@ class Formatter(QThread):
         # Formatting status
         self.formatting = False
 
+        # Error state
+        self.error = False
+
     def run(self):
         # Send signal for notification
         self.formatting = True
@@ -57,7 +60,12 @@ class Formatter(QThread):
 
             self.emit(SIGNAL("format_successful()"))
         else:
-            self.emit(SIGNAL("format_failed()"))
+            if self.error:
+                self.error = False
+                self.emit(SIGNAL("partition_table_error()"))
+
+            else:
+                self.emit(SIGNAL("format_failed()"))
 
         self.formatting = False
 
@@ -72,6 +80,30 @@ class Formatter(QThread):
             if self.volume.path == mountPoint[0]:
                 return True
 
+    def _set_file_system_type(self):
+        try:
+            print "---------------"
+            print "TRYING TO SET FILE SYSTEM of %s to %s" % (self.volume.device_path, self.new_file_system)
+
+            try:
+                parted_device = parted.Device(self.volume.device_path)
+                parted_disk = parted.Disk(parted_device)
+            except:
+                parted_device = parted.Device(self.volume.path)
+                parted_disk = parted.Disk(parted_device)
+
+            parted_partition = parted_disk.getPartitionByPath(self.volume.path)
+
+            parted_partition.system = parted.fileSystemType.get(self.new_file_system_parted)
+
+            # Commit Changes
+            parted_disk.commit()
+            print "SUCCCESS"
+        except Exception as e:
+            print "FAILED TO SET FILE SYSTEM", e.message
+            self.error = True
+            self.emit(SIGNAL("partition_table_error()"))
+
     def _remove_volume_flags(self):
         try:
             print "---------------"
@@ -81,7 +113,6 @@ class Formatter(QThread):
             parted_disk = parted.Disk(parted_device)
 
             parted_partition = parted_disk.getPartitionByPath(self.volume.path)
-            parted_partition.fileSystem = parted.fileSystemType[self.flag]
 
             # Get possible flags
             parted_flags = parted.partitionFlag.values()
@@ -95,6 +126,7 @@ class Formatter(QThread):
 
             # Commit Changes
             parted_disk.commit()
+            print "SUCCCESS"
         except Exception as e:
             print "FAILED TO REMOVE FLAGS \n", e.message
 
@@ -118,23 +150,31 @@ class Formatter(QThread):
         if self.new_label == "":
             self.new_label = "My Disk"
 
-        self.flag = ""
+        self.new_file_system_parted = ""
 
         # If VFAT then labeling parameter changes
         if self.new_file_system == "vfat":
             self.labelingCommand = "-n"
-            self.flag = "fat32"
+            self.new_file_system_parted = "fat32"
         else:
             self.labelingCommand = "-L"
-            self.flag = self.new_file_system
+            self.new_file_system_parted = self.new_file_system
 
+        # Set file system type as the selected one
+        self._set_file_system_type()
+
+        # Remove any flags from the partition
+        self._remove_volume_flags()
+
+        if self.error:
+            return False
         # udev trigger here??
 
         # Command to execute
         command = "mkfs -t %s %s %s '%s' %s -v" % (self.new_file_system, self.quickOption, self.labelingCommand, self.new_label, self.volume.path)
         print "---------------"
         print "COMMAND: %s" % command
-        print "---------------"
+
 
         # Execute
         proc = Popen(command, shell = True, stdout = PIPE,)
@@ -144,15 +184,6 @@ class Formatter(QThread):
         print "---------------"
         print "OUTPUT: %s" % output
         print "RETURN: %s" % proc.returncode
-        print "---------------"
 
-        ### TODO:
-        ### if output contains these words emmit signal
-        ### errorWords = ["error", "Error", "cannot", "Cannot"] ...
-
-        # If format succeeded, remove parition flags
         if proc.returncode == 0:
-            # Change Device Flags With Parted Module
-            self._remove_volume_flags()
-
             return True

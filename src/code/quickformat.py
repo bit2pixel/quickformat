@@ -31,7 +31,7 @@ from quickformat.ui_quickformat import Ui_QuickFormat
 from quickformat.formatter import Formatter
 
 from quickformat.notifier import Notifier
-from quickformat.notifier import NO_DEVICE, FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES
+from quickformat.notifier import PARTITION_TABLE_ERROR, NO_DEVICE, FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES
 
 from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
@@ -241,6 +241,7 @@ class QuickFormat(QtGui.QWidget):
         self.connect(self.formatter, SIGNAL("format_started()"), self.slot_format_started)
         self.connect(self.formatter, SIGNAL("format_successful()"), self.slot_format_successful)
         self.connect(self.formatter, SIGNAL("format_failed()"), self.slot_format_failed)
+        self.connect(self.formatter, SIGNAL("partition_table_error()"), self.slot_partition_table_error)
 
     def filter_file_system(self, volume):
         if volume.has_accepted_bus() and volume.has_accepted_drivetype():
@@ -301,6 +302,9 @@ class QuickFormat(QtGui.QWidget):
     def slot_format_failed(self):
         self.notifier.notify(FORMAT_FAILED)
 
+    def slot_partition_table_error(self):
+        self.notifier.notify(PARTITION_TABLE_ERROR)
+
     def no_device_notification(self):
         if self.first_run:
             msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
@@ -314,7 +318,6 @@ class QuickFormat(QtGui.QWidget):
             self.refreshing_devices = True
             self.notifier.notify(LOADING_DEVICES)
 
-
     def refresh_volume_list(self, notify=True):
         if notify:
             self.notify_refreshing_device_list()
@@ -324,8 +327,9 @@ class QuickFormat(QtGui.QWidget):
 
     def slot_refresh_volume_list(self, device):
         #FIX doesnt work if hal is used in system
-        if str(device).find("UDisks")>=0:
-            self.refresh_volume_list()
+        if not self.formatter.formatting:
+            if str(device).find("UDisks")>=0:
+                self.refresh_volume_list()
 
     def hide_notifier(self):
         self.notifier.animate(start=MIDCENTER, stop=MIDCENTER, direction=OUT)
