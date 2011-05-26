@@ -169,7 +169,7 @@ class Notifier(PAbstractBox):
             self.set_message(i18n("Loading devices..."), indicator=True)
 
         elif state == PARTITION_TABLE_ERROR:
-            self.set_message(i18n("The partition table seems to have errors.\nPlease re-partition this device and try again."), button=True, icon=ICON_ERROR)
+            self.set_message(i18n("The partition table seems corrupt.\nPlease re-partition this device and try again."), button=True, icon=ICON_ERROR)
 
 
         self.animate(start=MIDCENTER, stop=MIDCENTER)
