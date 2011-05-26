@@ -1,19 +1,19 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Patrik Karlsson <patrik@trixon.se>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-10 07:13+0300\n"
+"POT-Creation-Date: 2011-05-26 15:33+0300\n"
 "PO-Revision-Date: 2011-01-29 08:00+0100\n"
 "Last-Translator: Patrik Karlsson <patrik@trixon.se>\n"
 "Language-Team: Swedish <pardus-translators@pardus.org.tr>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
@@ -41,44 +41,13 @@ msgstr "Formatera"
 msgid "Close"
 msgstr "Stäng"
 
-#: .tmp/notifier.py:100 .tmp/quickformat/notifier.py:100
-msgid "OK"
-msgstr "Ok"
-
-#: .tmp/notifier.py:157 .tmp/quickformat/notifier.py:157
-msgid "Please wait while formatting..."
-msgstr "Vänligen vänta, formaterar..."
-
-#: .tmp/notifier.py:159 .tmp/quickformat/notifier.py:159
-msgid "Format completed successfully."
-msgstr "Formateringen slutfördes framgångsrikt"
-
-#: .tmp/notifier.py:161 .tmp/quickformat/notifier.py:161
-msgid ""
-"Cannot format this partition.\n"
-"The device might be in use.\n"
-"Please try again."
-msgstr ""
-
-#: .tmp/notifier.py:163 .tmp/quickformat.py:307
-#: .tmp/quickformat/notifier.py:163
-msgid "There aren't any removable devices."
-msgstr "Det finns inte några flyttbara enheter"
-
-#: .tmp/notifier.py:165 .tmp/quickformat/notifier.py:165
-msgid "Loading devices..."
-msgstr "Läser enheter..."
-
-#: .tmp/quickformat.py:307
-msgid "QuickFormat"
-msgstr "Snabbformatering"
-
 #: .tmp/quickformat/about.py:29 .tmp/about.py:29
 msgid "Removable Device Formatting Tool"
 msgstr "Formateringsverktyg för flyttbara enheter"
 
 #: .tmp/quickformat/about.py:31 .tmp/about.py:31
-msgid "(c) 2011 TUBITAK/UEKAE"
+#, fuzzy
+msgid "(c) 2011 TUBITAK/BILGEM"
 msgstr "(c) 2011 TUBITAK/UEKAE"
 
 #: .tmp/quickformat/about.py:39 .tmp/about.py:39
@@ -88,6 +57,44 @@ msgstr "Renan Cakirerk"
 #: .tmp/quickformat/about.py:39 .tmp/about.py:39
 msgid "Current Maintainer"
 msgstr "Nuvarande underhållare"
+
+#: .tmp/quickformat/notifier.py:100 .tmp/notifier.py:100
+msgid "OK"
+msgstr "Ok"
+
+#: .tmp/quickformat/notifier.py:157 .tmp/notifier.py:157
+msgid "Please wait while formatting..."
+msgstr "Vänligen vänta, formaterar..."
+
+#: .tmp/quickformat/notifier.py:160 .tmp/notifier.py:160
+msgid "Format completed successfully."
+msgstr "Formateringen slutfördes framgångsrikt"
+
+#: .tmp/quickformat/notifier.py:163 .tmp/notifier.py:163
+msgid ""
+"Cannot format this partition.\n"
+"The device might be in use.\n"
+"Please try again."
+msgstr ""
+
+#: .tmp/quickformat/notifier.py:166 .tmp/quickformat.py:310
+#: .tmp/notifier.py:166
+msgid "There aren't any removable devices."
+msgstr "Det finns inte några flyttbara enheter"
+
+#: .tmp/quickformat/notifier.py:169 .tmp/notifier.py:169
+msgid "Loading devices..."
+msgstr "Läser enheter..."
+
+#: .tmp/quickformat/notifier.py:172 .tmp/notifier.py:172
+msgid ""
+"The partition table seems corrupt.\n"
+"Please re-partition this device and try again."
+msgstr ""
+
+#: .tmp/quickformat.py:310
+msgid "QuickFormat"
+msgstr "Snabbformatering"
 
 #: .tmp/ui_volumeitem.py:143
 msgid ":"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-10 07:13+0300\n"
+"POT-Creation-Date: 2011-05-26 15:33+0300\n"
 "PO-Revision-Date: 2011-01-25 12:46+0100\n"
 "Last-Translator: Attila Siposs <sipiatti@gmail.com>\n"
 "Language-Team: Hungarian <pardus-translators@pardus.org.tr>\n"
@@ -42,44 +42,13 @@ msgstr "Formázás"
 msgid "Close"
 msgstr "Bezárás"
 
-#: .tmp/notifier.py:100 .tmp/quickformat/notifier.py:100
-msgid "OK"
-msgstr ""
-
-#: .tmp/notifier.py:157 .tmp/quickformat/notifier.py:157
-msgid "Please wait while formatting..."
-msgstr "Kérem várjon amíg a formázás elkészül..."
-
-#: .tmp/notifier.py:159 .tmp/quickformat/notifier.py:159
-msgid "Format completed successfully."
-msgstr "A formázás kész."
-
-#: .tmp/notifier.py:161 .tmp/quickformat/notifier.py:161
-msgid ""
-"Cannot format this partition.\n"
-"The device might be in use.\n"
-"Please try again."
-msgstr ""
-
-#: .tmp/notifier.py:163 .tmp/quickformat.py:307
-#: .tmp/quickformat/notifier.py:163
-msgid "There aren't any removable devices."
-msgstr "Nincsen csatlakoztatott eszköz."
-
-#: .tmp/notifier.py:165 .tmp/quickformat/notifier.py:165
-msgid "Loading devices..."
-msgstr ""
-
-#: .tmp/quickformat.py:307
-msgid "QuickFormat"
-msgstr "GyorsFormázó"
-
 #: .tmp/quickformat/about.py:29 .tmp/about.py:29
 msgid "Removable Device Formatting Tool"
 msgstr "Formázó program csatlakoztatható eszközökhöz"
 
 #: .tmp/quickformat/about.py:31 .tmp/about.py:31
-msgid "(c) 2011 TUBITAK/UEKAE"
+#, fuzzy
+msgid "(c) 2011 TUBITAK/BILGEM"
 msgstr "(c) 2011 TUBITAK/UEKAE"
 
 #: .tmp/quickformat/about.py:39 .tmp/about.py:39
@@ -89,6 +58,44 @@ msgstr "Renan Cakirerk"
 #: .tmp/quickformat/about.py:39 .tmp/about.py:39
 msgid "Current Maintainer"
 msgstr "Jelenlegi karbantartó"
+
+#: .tmp/quickformat/notifier.py:100 .tmp/notifier.py:100
+msgid "OK"
+msgstr ""
+
+#: .tmp/quickformat/notifier.py:157 .tmp/notifier.py:157
+msgid "Please wait while formatting..."
+msgstr "Kérem várjon amíg a formázás elkészül..."
+
+#: .tmp/quickformat/notifier.py:160 .tmp/notifier.py:160
+msgid "Format completed successfully."
+msgstr "A formázás kész."
+
+#: .tmp/quickformat/notifier.py:163 .tmp/notifier.py:163
+msgid ""
+"Cannot format this partition.\n"
+"The device might be in use.\n"
+"Please try again."
+msgstr ""
+
+#: .tmp/quickformat/notifier.py:166 .tmp/quickformat.py:310
+#: .tmp/notifier.py:166
+msgid "There aren't any removable devices."
+msgstr "Nincsen csatlakoztatott eszköz."
+
+#: .tmp/quickformat/notifier.py:169 .tmp/notifier.py:169
+msgid "Loading devices..."
+msgstr ""
+
+#: .tmp/quickformat/notifier.py:172 .tmp/notifier.py:172
+msgid ""
+"The partition table seems corrupt.\n"
+"Please re-partition this device and try again."
+msgstr ""
+
+#: .tmp/quickformat.py:310
+msgid "QuickFormat"
+msgstr "GyorsFormázó"
 
 #: .tmp/ui_volumeitem.py:143
 msgid ":"
