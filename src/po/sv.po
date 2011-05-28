@@ -1,6 +1,6 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Patrik Karlsson <patrik@trixon.se>, 2011.
 msgid ""
 msgstr ""
@@ -10,10 +10,10 @@ msgstr ""
 "PO-Revision-Date: 2011-01-29 08:00+0100\n"
 "Last-Translator: Patrik Karlsson <patrik@trixon.se>\n"
 "Language-Team: Swedish <pardus-translators@pardus.org.tr>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
@@ -46,9 +46,8 @@ msgid "Removable Device Formatting Tool"
 msgstr "Formateringsverktyg för flyttbara enheter"
 
 #: .tmp/quickformat/about.py:31 .tmp/about.py:31
-#, fuzzy
 msgid "(c) 2011 TUBITAK/BILGEM"
-msgstr "(c) 2011 TUBITAK/UEKAE"
+msgstr "(c) 2011 TUBITAK/BILGEM"
 
 #: .tmp/quickformat/about.py:39 .tmp/about.py:39
 msgid "Renan Cakirerk"
@@ -76,6 +75,9 @@ msgid ""
 "The device might be in use.\n"
 "Please try again."
 msgstr ""
+"Kan inte formatera denna partition.\n"
+"Enheten kan vara i bruk.\n"
+"Försök igen."
 
 #: .tmp/quickformat/notifier.py:166 .tmp/quickformat.py:310
 #: .tmp/notifier.py:166
@@ -91,6 +93,8 @@ msgid ""
 "The partition table seems corrupt.\n"
 "Please re-partition this device and try again."
 msgstr ""
+"Partitionstabellen verkar skadad.\n"
+"Vänligen partitionera enheten och försök igen."
 
 #: .tmp/quickformat.py:310
 msgid "QuickFormat"
