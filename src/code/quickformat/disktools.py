@@ -23,6 +23,8 @@ from time import sleep
 from fcntl import ioctl
 import os, sys
 
+import subprocess
+
 # Path to sync executable
 PATH_SYNC = '/bin/sync'
 
@@ -63,6 +65,14 @@ def BLKRRPART():
     return _IO(0x12, 95)
 # -------------------------------------------
 
+
+def runCommand(cmd):
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    err = proc.communicate()[1].strip()
+    if len(err):
+        pass
+        #fail(_(FAIL_OPERATION) % err)
+
 def refreshPartitionTable(device):
     """Re-Read partition table on device."""
 
@@ -101,6 +111,18 @@ def refreshPartitionTable(device):
     sleep(4) # for sync()
     print "Done."
 
+def mount(device, path):
+    if not path:
+        path = getPath(device)
+        if not createPath(device, path):
+            # Can't create new path
+            #fail(_(FAIL_PATH) % path)
+            pass
+        elif device in [x[0] for x in getMounted()]:
+            # Device is mounted
+            #fail(_(FAIL_MOUNTED) % device)
+            pass
+    runCommand(['/bin/mount', device, path])
 
 def getMounted():
     parts = []
@@ -110,11 +132,9 @@ def getMounted():
             parts.append((device, path, ))
     return parts
 
-
 def umount(device):
     for dev, path in getMounted():
         if dev == device and path == "/":
-            fail(_(FAIL_ROOT) % device)
+            pass
+            #fail(_(FAIL_ROOT) % device)
     runCommand(['/bin/umount', device])
-
-

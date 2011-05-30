@@ -80,6 +80,15 @@ class Formatter(QThread):
             if self.volume.path == mountPoint[0]:
                 return True
 
+    def _set_partition_privileges(self, device_path, mode, uid, gid):
+        if os.path.exists(device_path):
+            try:
+                os.chmod(device_path, mode)
+                os.chown(device_path, uid, gid)
+            except OSError, msg:
+                print msg
+                #ctx.logger.debug("Unexpected error: %s" % msg)
+
     def _set_file_system_type(self):
         try:
             print "---------------"
@@ -120,7 +129,7 @@ class Formatter(QThread):
             # Remove any Flags
             flags_found = parted_partition.getFlagsAsString().split(", ")
 
-            if len(flags_found) == 0:
+            if flags_found:
                 for flag in flags_found:
                     parted_partition.unsetFlag(parted_flags.index(flag) + 1)
 
@@ -136,7 +145,10 @@ class Formatter(QThread):
         if self.is_device_mounted() == True:
             try:
                 umount(str(self.volume.path))
+                print "---------------"
+                print "TRYING TO UNMOUNT"
             except:
+                print "UNMOUNTING FAILED"
                 return False
 
         # If NTFS is selected then activate quick formating option
@@ -185,5 +197,16 @@ class Formatter(QThread):
         print "OUTPUT: %s" % output
         print "RETURN: %s" % proc.returncode
 
+
+
+
         if proc.returncode == 0:
+            #if os.path.exists("/tmp/quickformat"):
+            #    os.mkdir("/tmp/quickformat")
+
+            #mount(self.volume.device_path, "/tmp/quickformat")
+
+            # Set partition privilages
+            #self._set_partition_privileges("/tmp/quickformat", 0770, 0, 6)
+
             return True
