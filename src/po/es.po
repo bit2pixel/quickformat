@@ -92,6 +92,8 @@ msgid ""
 "The partition table seems corrupt.\n"
 "Please re-partition this device and try again."
 msgstr ""
+"La tabla de particiones parece estar corrompida.\n"
+"Por favor vuelva a particionar el dispositivo y luego intente de nuevo."
 
 #: .tmp/quickformat.py:310
 msgid "QuickFormat"
