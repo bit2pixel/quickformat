@@ -65,7 +65,7 @@ msgstr "OK"
 
 #: .tmp/quickformat/notifier.py:157 .tmp/notifier.py:157
 msgid "Please wait while formatting..."
-msgstr "Пожалуйсте, подождите, идет форматирование..."
+msgstr "Подождите, идет форматирование..."
 
 #: .tmp/quickformat/notifier.py:160 .tmp/notifier.py:160
 msgid "Format completed successfully."
