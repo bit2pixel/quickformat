@@ -22,10 +22,12 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QVariant, QSize, SIGNAL, QThread
 
-from PyKDE4 import kdeui
-from PyKDE4.kdecore import i18n
-from PyKDE4.solid import Solid
-from PyKDE4.kdecore import KCmdLineArgs
+#from PyKDE4 import kdeui
+#from PyKDE4.kdecore import i18n
+#from PyKDE4.solid import Solid
+#from PyKDE4.kdecore import KCmdLineArgs
+
+from QFDetector import Detector
 
 from quickformat.ui_quickformat import Ui_QuickFormat
 from quickformat.formatter import Formatter
@@ -33,7 +35,7 @@ from quickformat.formatter import Formatter
 from quickformat.notifier import Notifier
 from quickformat.notifier import PARTITION_TABLE_ERROR, NO_DEVICE, FORMAT_STARTED, FORMAT_SUCCESSFUL, FORMAT_FAILED, LOADING_DEVICES
 
-from quickformat.about import aboutData
+#from quickformat.about import aboutData
 from quickformat.ui_volumeitem import Ui_VolumeItem
 
 from quickformat.notifier_backend import OUT, TOPCENTER, MIDCENTER, CURRENT, OUT
@@ -49,20 +51,28 @@ FILE_SYSTEMS = {"Ext4":"ext4",
                 "NTFS":"ntfs-3g",
                 }
 
-ACCEPTED_BUSSES = [Solid.StorageDrive.Usb,
-                   Solid.StorageDrive.Ieee1394, # Firewire
-                   Solid.StorageDrive.Platform] # Card Readers
+ACCEPTED_BUSSES = ["usb",
+                   "firewire", # Firewire
+                   "platform"] # Card Readers
 
-ACCEPTED_DRIVE_TYPES = [Solid.StorageDrive.HardDisk,
-                        Solid.StorageDrive.Floppy,
-                        Solid.StorageDrive.CompactFlash,
-                        Solid.StorageDrive.MemoryStick,
-                        Solid.StorageDrive.SmartMedia,
-                        Solid.StorageDrive.SdMmc,
-                        Solid.StorageDrive.Xd]
+#ACCEPTED_DRIVE_TYPES = [Solid.StorageDrive.HardDisk,
+ #                       Solid.StorageDrive.Floppy,
+  #                      Solid.StorageDrive.CompactFlash,
+   #                     Solid.StorageDrive.MemoryStick,
+    #                    Solid.StorageDrive.SmartMedia,
+     #                  Solid.StorageDrive.SdMmc,
+      #                   Solid.StorageDrive.Xd]
 
-class Volume():
+
+
+class Volume(): 
+
     def __init__(self, volume):
+
+        bus = dbus.SystemBus()
+        self.pr = bus.get_object("org.freedesktop.UDisks",volume)
+        self.i = dbus.Interface(self.pr,"org.freedesktop.DBus.Properties")
+
         self.volume = volume
 
         self.icon = self.get_volume_icon()
@@ -71,10 +81,18 @@ class Volume():
         self.file_system = self.get_volume_file_system()
         self.size = self.get_volume_size()
 
-        self.device_type = self.get_device_type()
+        #self.device_type = self.get_device_type()
         self.device_bus = self.get_device_bus()
         self.device_path = self.get_device_path()
         self.device_name = self.get_device_name()
+
+
+    def get_property(self,prob):
+        return self.i.Get("org.freedesktop.UDisks.Device",prob)
+
+    def get_all_properties(self):
+        return self.i.GetAll("org.freedesktop.UDisks.Device")
+
 
     def has_accepted_bus(self):
         """ controls if the device is appropriate for formatting """
@@ -82,6 +100,7 @@ class Volume():
             return True
 
     def has_accepted_drivetype(self):
+        #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
        if self.device_type in ACCEPTED_DRIVE_TYPES:
             return True
 
@@ -90,6 +109,7 @@ class Volume():
 
     def get_device_type(self):
         """ returns the bus of the device """
+        #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         try:
             return self.volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).driveType()
         except:
@@ -97,44 +117,46 @@ class Volume():
 
     def get_device_bus(self):
         """ returns the bus of the device """
-        try:
-            return self.volume.parent().asDeviceInterface(Solid.StorageDrive.StorageDrive).bus()
-        except:
-            print "WARNING: get_device_bus (no parent?) -> %s" % self.path
+        
+        #try:
+        return self.get_property("DriveConnectionInterface")
+        #except:
+        #    print "WARNING: get_device_bus (no parent?) -> %s" % self.path
 
     def get_device_path(self):
-        try:
-            return str(self.volume.parent().asDeviceInterface(Solid.Block.Block).device())
-        except:
-            print "WARNING: get_device_path (no parent?) -> %s" % self.path
-            return self.path
+        return self.get_volume_path()[:-1]
+
 
     def get_device_name(self):
         """ returns the device name that the volume resides on """
-        return str("%s %s" % (self.volume.parent().vendor(), self.volume.parent().product()))
-
-
+	# product
+        return self.get_property("DriveVendor") + " " +  self.get_property("DriveModel")
+ 
     # Get Volume Information
 
     def get_volume_icon(self):
-        icon = str(self.volume.icon())
-        iconPath = ":/images/images/" + icon + ".png"
-        return QtGui.QPixmap(iconPath)
+       # icon = str(self.volume.icon())
+       # iconPath = ":/images/images/" + icon + ".png"
+        return QtGui.QPixmap(":/images/images/drive-harddisk.png")
+        pass
 
     def get_volume_name(self):
-        return str(self.volume.product())
+        #return str(self.volume.product())
+        return self.get_property("IdLabel")
 
     def get_volume_path(self):
-        return str(self.volume.asDeviceInterface(Solid.Block.Block).device())
+        # /dev/sdb1
+        return self.get_property("DeviceFile")
 
     def get_volume_file_system(self):
-        return str(self.volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).fsType())
+	# vfat
+        return self.get_property("IdType") 
 
     def get_volume_size(self):
-        return self.volume.asDeviceInterface(Solid.StorageVolume.StorageVolume).size()
-
+        return self.get_property("PartitionSize")
 
 class VolumeUiItem(Ui_VolumeItem, QtGui.QWidget):
+
     def __init__(self, volume, parent = None):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
@@ -167,6 +189,7 @@ class VolumeUiItem(Ui_VolumeItem, QtGui.QWidget):
 
 
 class QuickFormat(QtGui.QWidget):
+
     def __init__(self, parent = None, args = None):
         QtGui.QWidget.__init__(self, parent)
         self.__sysargs = args
@@ -176,13 +199,15 @@ class QuickFormat(QtGui.QWidget):
 
         self.formatter = Formatter()
 
+        self.detector = Detector() # for usb recognition
+
         self.first_run = True
 
         # Initial selection is the first partition found (see next comment)
         self.initial_selection = 0
 
         # If a partition path is given as argument, intial selection becomes the parition given
-        self.__process_args__()
+        #self.__process_args__()
 
         # Connect Qt Signals
         self.__init_signals__()
@@ -193,7 +218,7 @@ class QuickFormat(QtGui.QWidget):
         # Initialize the fancy notification widget (Derrived from PDS by Gokmen Goksel)
         self.__init_notifier__()
 
-        self.show_volume_list()
+        self.show_volume_list() # Detector kullanir
         self.generate_file_system_list()
 
         self.volume_to_format = ""
@@ -201,11 +226,14 @@ class QuickFormat(QtGui.QWidget):
         self.__make_initial_selection__(self.initial_selection)
 
         self.refreshing_devices = False
+        
+	self.detector.iface.connect_to_signal('DeviceAdded', self.slot_refresh_volume_list)
+        self.detector.iface.connect_to_signal('DeviceRemoved', self.slot_refresh_volume_list)
 
         # Monitor USB ports for any new devices
-        notifier = Solid.DeviceNotifier().instance()
-        self.connect(notifier, SIGNAL("deviceAdded(const QString&)"), self.slot_refresh_volume_list)
-        self.connect(notifier, SIGNAL("deviceRemoved(const QString&)"), self.slot_refresh_volume_list)
+        #notifier = Solid.DeviceNotifier().instance()
+        #self.connect(notifier, SIGNAL("deviceAdded(const QString&)"), self.slot_refresh_volume_list)
+        #self.connect(notifier, SIGNAL("deviceRemoved(const QString&)"), self.slot_refresh_volume_list)
 
     def __make_initial_selection__(self, index):
         self.ui.volumeName.setCurrentIndex(index)
@@ -244,17 +272,18 @@ class QuickFormat(QtGui.QWidget):
         self.connect(self.formatter, SIGNAL("partition_table_error()"), self.slot_partition_table_error)
 
     def filter_file_system(self, volume):
-        if volume.has_accepted_bus() and volume.has_accepted_drivetype():
+        if volume.has_accepted_bus():
             return True
 
     def get_volumes(self):
-        volumes = []
 
+        volumes = []
         # Get volumes
-        for v in Solid.Device.listFromType(Solid.StorageDrive.StorageVolume):
+        for v in self.detector.get_all_devices():
             # Apply filter
             volume = Volume(v)
             if self.filter_file_system(volume):
+
                 volumes.append(volume)
         return volumes
 
@@ -307,7 +336,7 @@ class QuickFormat(QtGui.QWidget):
 
     def no_device_notification(self):
         if self.first_run:
-            msgBox = QtGui.QMessageBox(1, i18n("QuickFormat"), i18n("There aren't any removable devices."))
+            msgBox = QtGui.QMessageBox(1,"QuickFormat", "There aren't any removable devices.")
             msgBox.exec_()
             sys.exit()
         else:
@@ -406,9 +435,8 @@ class QuickFormat(QtGui.QWidget):
 
         item.setSizeHint(QSize(200,70))
 
-        if volume.path == self.volumePathArg:
-            self.initial_selection = self.ui.listWidget.count() - 1
-
+        #if volume.path == self.volumePathArg:
+        #    self.initial_selection = self.ui.listWidget.count() - 1
 
 if __name__ == "__main__":
     args = []
@@ -417,15 +445,17 @@ if __name__ == "__main__":
             args = sys.argv
             sys.argv = [sys.argv[0]]
 
+    app = QtGui.QApplication(sys.argv)
+
     # DBUS MainLoop
     if not dbus.get_default_main_loop():
         from dbus.mainloop.qt import DBusQtMainLoop
         DBusQtMainLoop(set_as_default = True)
 
-    KCmdLineArgs.init(sys.argv, aboutData)
-    app = kdeui.KApplication()
+    quick_format = QuickFormat()
 
-    quick_format = QuickFormat(args = args)
+    #KCmdLineArgs.init(sys.argv, aboutData)
+
     quick_format.show()
 
     app.exec_()
