@@ -122,16 +122,18 @@ class Formatter(QThread):
             parted_disk = parted.Disk(parted_device)
 
             parted_partition = parted_disk.getPartitionByPath(self.volume.path)
-
+	    print "self.volume.path: ", self.volume.path
             # Get possible flags
             parted_flags = parted.partitionFlag.values()
-
+	    print "parted flags: ", parted_flags
             # Remove any Flags
-            flags_found = parted_partition.getFlagsAsString().split(", ")
-
-            if flags_found:
-                for flag in flags_found:
-                    parted_partition.unsetFlag(parted_flags.index(flag) + 1)
+            #flags_found = parted_partition.getFlagsAsString().split(", ")
+	    #print "flags_found: ", flags_found	
+            #if flags_found:
+            for flag in parted_flags:
+	        print "bayrak bulundu: ", flag
+		    	
+                parted_partition.unsetFlag(parted_flags.index(flag) + 1)
 
             # Commit Changes
             parted_disk.commit()
