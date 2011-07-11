@@ -20,20 +20,20 @@
 # (See COPYING)
 
 # PyKDE
-#from PyKDE4.kdecore import KAboutData, ki18n
+from PyKDE4.kdecore import KAboutData, ki18n
 
 # Application Data
 appName     = "quickformat"
-programName = "Quick Format"
+programName = ki18n("Quick Format")
 version     = "1.0.0"
-description = "Removable Device Formatting Tool"
+description = ki18n("Removable Device Formatting Tool")
 license     = KAboutData.License_GPL
-copyright   = "(c) 2011 TUBITAK/BILGEM"
-text        = None
+copyright   = ki18n("(c) 2011 TUBITAK/BILGEM")
+text        = ki18n(None)
 homePage    = "http://www.pardus.org.tr/eng/projects"
 bugEmail    = "bugs@pardus.org.tr"
 catalog     = appName
-#aboutData   = KAboutData(appName, catalog, programName, version, description, license, copyright, text, homePage, bugEmail)
+aboutData   = KAboutData(appName, catalog, programName, version, description, license, copyright, text, homePage, bugEmail)
 
 # Author(s)
-aboutData.addAuthor("Renan Cakirerk", "Current Maintainer")
+aboutData.addAuthor(ki18n("Renan Cakirerk"), ki18n("Current Maintainer"))
