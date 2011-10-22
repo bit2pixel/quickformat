@@ -58,7 +58,7 @@ msgstr "Responsable actual"
 
 #: .tmp/quickformat/notifier.py:100 .tmp/notifier.py:100
 msgid "OK"
-msgstr ""
+msgstr "Listo"
 
 #: .tmp/quickformat/notifier.py:157 .tmp/notifier.py:157
 msgid "Please wait while formatting..."
@@ -100,12 +100,14 @@ msgid "QuickFormat"
 msgstr "QuickFormat"
 
 #: .tmp/ui_volumeitem.py:143
+#, fuzzy
 msgid ":"
-msgstr ""
+msgstr ":"
 
 #: .tmp/ui_volumeitem.py:144
+#, fuzzy
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #~ msgid "Device is in use. Please try again."
 #~ msgstr "Dispositivo está siendo utilizado. Por favor intente de nuevo"
